@@ -8,19 +8,29 @@ set(ENGINE_PUBLIC_INCLUDES
 	includes/GameEngineCore/log.h
 )
 
+set(ENGINE_PRIVATE_INCLUDES
+	src/GameEngineCore/window.h
+)
+
 set(ENGINE_PRIVATE_SOURCES 
 	src/GameEngineCore/application.cpp
+	src/GameEngineCore/window.cpp
 )
 
 add_library(GameEngineCore STATIC 
 	${ENGINE_PUBLIC_INCLUDES}
+	${ENGINE_PRIVATE_INCLUDES}
 	${ENGINE_PRIVATE_SOURCES}
 )
 	
 target_include_directories(GameEngineCore PUBLIC includes)
+target_include_directories(GameEngineCore PRIVATE src)
 
 add_subdirectory(../external/glfw ${CMAKE_CURRENT_BINARY_DIR}/glfw)
 target_link_libraries(GameEngineCore PRIVATE glfw)
 
 add_subdirectory(../external/spdlog ${CMAKE_CURRENT_BINARY_DIR}/spdlog)
 target_link_libraries(GameEngineCore PRIVATE spdlog)
+
+add_subdirectory(../external/glad ${CMAKE_CURRENT_BINARY_DIR}/glad)
+target_link_libraries(GameEngineCore PRIVATE glad)
