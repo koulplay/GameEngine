@@ -17,4 +17,4 @@ public:
 	virtual void OnUpdate() {}
 };
 
-}//  end namespace game_engine
+}// end namespace game_engine
