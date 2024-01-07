@@ -9,3 +9,6 @@ add_library(GameEngineCore STATIC
 	
 target_include_directories(GameEngineCore PUBLIC includes)
 
+add_subdirectory(../external/glfw ${CMAKE_CURRENT_BINARY_DIR}/glfw)
+target_link_libraries(GameEngineCore PRIVATE glfw)
+
