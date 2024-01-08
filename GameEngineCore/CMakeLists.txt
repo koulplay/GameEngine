@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(ENGINE_PUBLIC_INCLUDES 
 	includes/GameEngineCore/application.h
 	includes/GameEngineCore/log.h
+	includes/GameEngineCore/event.h
 )
 
 set(ENGINE_PRIVATE_INCLUDES

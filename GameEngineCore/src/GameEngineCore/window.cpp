@@ -11,9 +11,7 @@ namespace game_engine {
 static bool is_GLFW_initialized = false;
 
 Window::Window(std::string title, const unsigned int wight, const unsigned int height)
-	: title_(std::move(title))
-	, wight_(wight)
-	, height_(height) {
+	: data_({ std::move(title), wight, height }) {
 	int result_code = Init();
 }
 
@@ -21,9 +19,13 @@ Window::~Window() {
 
 }
 
-unsigned int Window::GetWight() const { return wight_; }
+unsigned int Window::GetWight() const { return data_.wight; }
 
-unsigned int Window::GetHeight() const { return height_; }
+unsigned int Window::GetHeight() const { return data_.height; }
+
+void Window::SetEventCallback(const EventCallbackFn& callback) {
+	data_.call_back_fn = callback;
+}
 
 void Window::OnUpdate() {
 	glClearColor(1, 0, 0, 0);
@@ -33,7 +35,7 @@ void Window::OnUpdate() {
 }
 
 int Window::Init() {
-	LOG_INFO("Creating window '{0}' with size {1}x{2}", title_, wight_, height_);
+	LOG_INFO("Creating window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
 
 	/* Initialize the library */
 	if (!is_GLFW_initialized){
@@ -46,9 +48,9 @@ int Window::Init() {
 	}
 
 	/* Create a windowed mode window and its OpenGL context */
-	p_window_ = glfwCreateWindow(wight_, height_, title_.c_str(), nullptr, nullptr);
+	p_window_ = glfwCreateWindow(data_.wight, data_.height, data_.title.c_str(), nullptr, nullptr);
 	if(!p_window_) {
-		LOG_CRITICAL("Can\'t create window '{0}' with size {1}x{2}", title_, wight_, height_);
+		LOG_CRITICAL("Can\'t create window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
 		glfwTerminate();
 		return -2;
 	}
@@ -60,6 +62,19 @@ int Window::Init() {
 		LOG_CRITICAL("Failed to initialize GLAD");
 		return -3;
 	}
+
+	glfwSetWindowUserPointer(p_window_, &this->data_);
+
+	glfwSetWindowSizeCallback(p_window_, [](GLFWwindow* p_window, int wight, int height) {
+		WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(p_window));
+		data.wight = wight;
+		data.height = height;
+
+		Event event;
+		event.wight = wight;
+		event.height = height;
+		data.call_back_fn(event);
+	});
 
 	return 0;
 }
