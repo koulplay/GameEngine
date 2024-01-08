@@ -6,5 +6,9 @@ namespace game_engine{
 		unsigned int wight;
 		unsigned int height;
 	};
+
+	class MoveEvent : public Event{
+		
+	};
 	
 }// end namespace game_engine
