@@ -7,6 +7,9 @@ set(ENGINE_PUBLIC_INCLUDES
 	includes/GameEngineCore/application.h
 	includes/GameEngineCore/log.h
 	includes/GameEngineCore/event.h
+	includes/GameEngineCore/mouseEvent.h
+	includes/GameEngineCore/windowEvent.h
+	includes/GameEngineCore/keyEvent.h
 )
 
 set(ENGINE_PRIVATE_INCLUDES
