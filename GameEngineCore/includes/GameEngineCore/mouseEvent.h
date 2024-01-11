@@ -45,6 +45,13 @@ public:
 	EventMouseMoved(double mouseX, double mouseY)
 		: mouseX_(mouseX), mouseY_(mouseY){}
 
+	double GetMouseX() const {
+		return mouseX_;
+	}
+	double GetMouseY() const {
+		return mouseY_;
+	}
+
 	EventType GetEventType() override {
 		return event_type_;
 	}
@@ -58,6 +65,13 @@ class EventMouseScrolled : public EventBase {
 public:
 	EventMouseScrolled(double Xoffset, double Yoffset)
 		: Xoffset_(Xoffset), Yoffset_(Yoffset) {}
+
+	double GetXOffset() const {
+		return Xoffset_;
+	}
+	double GetYOffset() const {
+		return Yoffset_;
+	}
 
 	EventType GetEventType() override {
 		return event_type_;

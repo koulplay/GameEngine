@@ -18,14 +18,21 @@ private:
 
 class EventWindowResize : public EventBase {
 public:
-	EventWindowResize(int width, int height)
+	EventWindowResize(unsigned int width, unsigned int height)
 		: width_(width), height_(height) {}
+
+	unsigned int GetWidth() const {
+		return width_;
+	}
+	unsigned int GetWidth() const {
+		return height_;
+	}
 
 	EventType GetEventType() override {
 		return event_type_;
 	}
 private:
-	int width_, height_;
+	unsigned int width_, height_;
 
 	const static EventType event_type_ = EventType::WINDOW_RESIZE;
 };
