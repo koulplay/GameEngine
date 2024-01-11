@@ -23,10 +23,8 @@ public:
 		: EventKey(key) {}
 
 	EventType GetEventType() override {
-		return event_type_;
+		return EventType::KEY_PRESSED;
 	}
-private:
-	const static EventType event_type_ = EventType::KEY_PRESSED;
 };
 
 class EventKeyReleased : public EventKey {
@@ -35,10 +33,8 @@ public:
 		: EventKey(key) {}
 
 	EventType GetEventType() override {
-		return event_type_;
+		return EventType::KEY_RELEASED;
 	}
-private:
-	const static EventType event_type_ = EventType::KEY_RELEASED;
 };
 
 }// end namespace game

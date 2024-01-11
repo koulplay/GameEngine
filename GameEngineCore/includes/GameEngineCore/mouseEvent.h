@@ -22,10 +22,8 @@ public:
 	: EventMouseButton(button){}
 
 	EventType GetEventType() override {
-		return event_type_;
+		return EventType::MOUSE_BUTTON_PRESSED;
 	}
-private:
-	const static EventType event_type_ = EventType::MOUSE_BUTTON_PRESSED;
 };
 
 class EventMouseButtonReleased : public EventMouseButton {
@@ -34,10 +32,8 @@ public:
 		: EventMouseButton(button) {}
 
 	EventType GetEventType() override {
-		return event_type_;
+		return EventType::MOUSE_BUTTON_RELEASED;
 	}
-private:
-	const static EventType event_type_ = EventType::MOUSE_BUTTON_RELEASED;
 };
 
 class EventMouseMoved : public EventBase {
@@ -53,12 +49,10 @@ public:
 	}
 
 	EventType GetEventType() override {
-		return event_type_;
+		return EventType::MOUSE_MOVED;
 	}
 private:
 	double mouseX_, mouseY_;
-
-	const static EventType event_type_ = EventType::MOUSE_MOVED;
 };
 
 class EventMouseScrolled : public EventBase {
@@ -74,12 +68,10 @@ public:
 	}
 
 	EventType GetEventType() override {
-		return event_type_;
+		return EventType::MOUSE_SCROLLED;
 	}
 private:
 	double Xoffset_, Yoffset_;
-
-	const static EventType event_type_ = EventType::MOUSE_SCROLLED;
 };
 
 }// end namespace game_engine

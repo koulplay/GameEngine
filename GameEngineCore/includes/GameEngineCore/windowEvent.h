@@ -10,10 +10,8 @@ public:
 	EventWindowClose() {}
 
 	EventType GetEventType() override {
-		return event_type_;
+		return EventType::WINDOW_CLOSE;
 	}
-private:
-	const static EventType event_type_ = EventType::WINDOW_CLOSE;
 };
 
 class EventWindowResize : public EventBase {
@@ -29,12 +27,10 @@ public:
 	}
 
 	EventType GetEventType() override {
-		return event_type_;
+		return EventType::WINDOW_RESIZE;
 	}
 private:
 	unsigned int width_, height_;
-
-	const static EventType event_type_ = EventType::WINDOW_RESIZE;
 };
 
 }// end namespace game_engine
