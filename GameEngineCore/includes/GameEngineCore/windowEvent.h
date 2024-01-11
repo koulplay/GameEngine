@@ -24,7 +24,7 @@ public:
 	unsigned int GetWidth() const {
 		return width_;
 	}
-	unsigned int GetWidth() const {
+	unsigned int GetHeight() const {
 		return height_;
 	}
 
