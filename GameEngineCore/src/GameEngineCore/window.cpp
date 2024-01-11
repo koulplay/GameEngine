@@ -1,10 +1,12 @@
 #include <GameEngineCore/window.h>
 #include <GameEngineCore/log.h>
+#include <GameEngineCore/windowEvent.h>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <utility>
+
 
 namespace game_engine {
 
@@ -35,12 +37,12 @@ void Window::OnUpdate() {
 }
 
 int Window::Init() {
-	LOG_INFO("Creating window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
+	LOG_INFO("[CORE] Creating window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
 
 	/* Initialize the library */
 	if (!is_GLFW_initialized){
 		if(!glfwInit()){
-			LOG_CRITICAL("Can\'t initialize GLFW!");
+			LOG_CRITICAL("[CORE] Can\'t initialize GLFW!");
 			return -1;
 		}
 			
@@ -50,7 +52,7 @@ int Window::Init() {
 	/* Create a windowed mode window and its OpenGL context */
 	p_window_ = glfwCreateWindow(data_.wight, data_.height, data_.title.c_str(), nullptr, nullptr);
 	if(!p_window_) {
-		LOG_CRITICAL("Can\'t create window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
+		LOG_CRITICAL("[CORE] Can\'t create window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
 		glfwTerminate();
 		return -2;
 	}
@@ -59,7 +61,7 @@ int Window::Init() {
 	glfwMakeContextCurrent(p_window_);
 
 	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		LOG_CRITICAL("Failed to initialize GLAD");
+		LOG_CRITICAL("[CORE] Failed to initialize GLAD");
 		return -3;
 	}
 
@@ -70,9 +72,7 @@ int Window::Init() {
 		data.wight = wight;
 		data.height = height;
 
-		Event event;
-		event.wight = wight;
-		event.height = height;
+		EventWindowResize event(wight, height);
 		data.call_back_fn(event);
 	});
 

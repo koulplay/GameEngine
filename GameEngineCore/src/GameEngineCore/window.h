@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GameEngineCore/event.h>
+#include <GameEngineCore/windowEvent.h>
 
 #include <string>
 #include <functional>
@@ -11,7 +12,7 @@ namespace game_engine {
 
 class Window {
 public:
-	using EventCallbackFn = std::function<void(Event&)>;
+	using EventCallbackFn = std::function<void(EventBase&)>;
 
 	Window(std::string title, const unsigned int wight, const unsigned int height);
 	~Window();
