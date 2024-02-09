@@ -22,8 +22,10 @@ public:
 
 	virtual void OnUpdate() {}
 	void OnEvent(EventBase& event);
+	bool OnWindowClose(EventWindowClose& event);
 
 private:
+	bool close_window_ = false;
 	std::unique_ptr<class Window> p_window_;
 };
 

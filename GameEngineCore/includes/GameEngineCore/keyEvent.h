@@ -22,8 +22,12 @@ public:
 	EventKeyPressed(int key)
 		: EventKey(key) {}
 
-	EventType GetEventType() override {
+	static EventType GetEventStaticType() {
 		return EventType::KEY_PRESSED;
+	}
+
+	EventType GetEventType() override {
+		return GetEventStaticType();
 	}
 };
 
@@ -32,8 +36,12 @@ public:
 	EventKeyReleased(int key)
 		: EventKey(key) {}
 
-	EventType GetEventType() override {
+	static EventType GetEventStaticType() {
 		return EventType::KEY_RELEASED;
+	}
+
+	EventType GetEventType() override {
+		return GetEventStaticType();
 	}
 };
 

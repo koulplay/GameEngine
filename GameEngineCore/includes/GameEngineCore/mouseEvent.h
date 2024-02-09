@@ -21,8 +21,12 @@ public:
 	EventMouseButtonPressed(int button)
 	: EventMouseButton(button){}
 
-	EventType GetEventType() override {
+	static EventType GetEventStaticType() {
 		return EventType::MOUSE_BUTTON_PRESSED;
+	}
+
+	EventType GetEventType() override {
+		return GetEventStaticType();
 	}
 };
 
@@ -31,8 +35,12 @@ public:
 	EventMouseButtonReleased(int button)
 		: EventMouseButton(button) {}
 
-	EventType GetEventType() override {
+	static EventType GetEventStaticType() {
 		return EventType::MOUSE_BUTTON_RELEASED;
+	}
+
+	EventType GetEventType() override {
+		return GetEventStaticType();
 	}
 };
 
@@ -48,8 +56,12 @@ public:
 		return mouseY_;
 	}
 
-	EventType GetEventType() override {
+	static EventType GetEventStaticType() {
 		return EventType::MOUSE_MOVED;
+	}
+
+	EventType GetEventType() override {
+		return GetEventStaticType();
 	}
 private:
 	double mouseX_, mouseY_;
@@ -67,8 +79,12 @@ public:
 		return Yoffset_;
 	}
 
-	EventType GetEventType() override {
+	static EventType GetEventStaticType() {
 		return EventType::MOUSE_SCROLLED;
+	}
+
+	EventType GetEventType() override {
+		return GetEventStaticType();
 	}
 private:
 	double Xoffset_, Yoffset_;

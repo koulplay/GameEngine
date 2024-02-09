@@ -9,8 +9,12 @@ class EventWindowClose : public EventBase {
 public:
 	EventWindowClose() {}
 
-	EventType GetEventType() override {
+	static EventType GetEventStaticType() {
 		return EventType::WINDOW_CLOSE;
+	}
+
+	EventType GetEventType() override {
+		return GetEventStaticType();
 	}
 };
 
@@ -26,8 +30,12 @@ public:
 		return height_;
 	}
 
-	EventType GetEventType() override {
+	static EventType GetEventStaticType() {
 		return EventType::WINDOW_RESIZE;
+	}
+
+	EventType GetEventType() override {
+		return GetEventStaticType();
 	}
 private:
 	unsigned int width_, height_;

@@ -33,7 +33,7 @@ private:
 	void Shutdown();
 
 private:
-	struct WindowData{
+	struct WindowData {
 		std::string title;
 		unsigned int wight;
 		unsigned int height;
@@ -42,6 +42,7 @@ private:
 
 	GLFWwindow* p_window_;
 	WindowData data_;
+	float background_color_[4]{ 1.f, 0.f, 0.f, 0.f };
 };
 
 }// end namespace game_engine
