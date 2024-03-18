@@ -36,11 +36,11 @@ void Application::OnEvent(EventBase& event) {
 	});
 
 	dispatcher.Dispatch<EventWindowResize>([this](EventWindowResize& event) {
-		LOG_INFO("[CORE] [EVENT] Changed size to {0}x{1}", event.GetWidth(), event.GetHeight());
+		//LOG_INFO("[CORE] [EVENT] Changed size to {0}x{1}", event.GetWidth(), event.GetHeight());
 	});
 
 	dispatcher.Dispatch<EventMouseMoved>([this](EventMouseMoved& event) {
-		LOG_INFO("[CORE] [EVENT] Mouse moved to {0}x{1}", event.GetMouseX(), event.GetMouseY());
+		//LOG_INFO("[CORE] [EVENT] Mouse moved to {0}x{1}", event.GetMouseX(), event.GetMouseY());
 	});
 }
 

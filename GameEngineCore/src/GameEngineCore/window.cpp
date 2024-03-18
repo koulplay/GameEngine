@@ -3,6 +3,9 @@
 #include <GameEngineCore/windowEvent.h>
 #include <GameEngineCore/mouseEvent.h>
 #include <GameEngineCore/keyEvent.h>
+#include "Rendering/OpenGL/shaderProgram.h"
+#include "Rendering/OpenGL/vertexBuffer.h"
+#include "Rendering/OpenGL/vertexArray.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -12,6 +15,7 @@
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
+
 
 namespace game_engine {
 
@@ -47,8 +51,10 @@ const GLchar* fragment_shader =
 "	frag_color = vec4(color, 1.0);"
 "}";
 
-GLuint shader_program;
-GLuint vao;
+std::unique_ptr<ShaderProgram> p_shader_program;
+std::unique_ptr<VertexBuffer> p_points_vbo;
+std::unique_ptr<VertexBuffer> p_colors_vbo;
+std::unique_ptr<VertexArray> p_vao;
 
 Window::Window(std::string title, const unsigned int wight, const unsigned int height)
 	: data_({ std::move(title), wight, height }) {
@@ -76,8 +82,8 @@ int Window::Init() {
 	LOG_INFO("[CORE] Creating window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
 
 	/* Initialize the library */
-	if(!is_GLFW_initialized) {
-		if(!glfwInit()) {
+	if (!is_GLFW_initialized) {
+		if (!glfwInit()) {
 			LOG_CRITICAL("[CORE] Can\'t initialize GLFW!");
 			return -1;
 		}
@@ -87,7 +93,7 @@ int Window::Init() {
 
 	/* Create a windowed mode window and its OpenGL context */
 	p_window_ = glfwCreateWindow(data_.wight, data_.height, data_.title.c_str(), nullptr, nullptr);
-	if(!p_window_) {
+	if (!p_window_) {
 		LOG_CRITICAL("[CORE] Can\'t create window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
 		glfwTerminate();
 		return -2;
@@ -96,7 +102,7 @@ int Window::Init() {
 	/* Make the window's context current */
 	glfwMakeContextCurrent(p_window_);
 
-	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		LOG_CRITICAL("[CORE] Failed to initialize GLAD");
 		return -3;
 	}
@@ -131,42 +137,17 @@ int Window::Init() {
 	});
 
 
-	GLuint vec_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vec_shader, 1, &vertex_shader, nullptr);
-	glCompileShader(vec_shader);
+	p_shader_program = std::make_unique<ShaderProgram>(vertex_shader, fragment_shader);
+	if (!p_shader_program->IsCompiled()) { return false; }
 
-	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(frag_shader, 1, &fragment_shader, nullptr);
-	glCompileShader(frag_shader);
+	p_points_vbo = std::make_unique<VertexBuffer>(points, sizeof(points));
+	p_colors_vbo = std::make_unique<VertexBuffer>(colors, sizeof(colors));
 
-	shader_program = glCreateProgram();
-	glAttachShader(shader_program, vec_shader);
-	glAttachShader(shader_program, frag_shader);
-	glLinkProgram(shader_program);
+	p_vao = std::make_unique<VertexArray>();
 
-	glDeleteShader(vec_shader);
-	glDeleteShader(frag_shader);
-
-	GLuint points_vbo = 0;
-	glGenBuffers(1, &points_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-
-	GLuint colors_vbo = 0;
-	glGenBuffers(1, &colors_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+	
+	p_vao->AddBuffer(*p_points_vbo);
+	p_vao->AddBuffer(*p_colors_vbo);
 
 	return 0;
 }
@@ -175,12 +156,9 @@ void Window::OnUpdate() {
 	glClearColor(background_color_[0], background_color_[1], background_color_[2], background_color_[3]);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glUseProgram(shader_program);
-	glBindVertexArray(vao);
+	p_shader_program->Bind();
+	p_vao->Bind();
 	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-
-
 
 
 

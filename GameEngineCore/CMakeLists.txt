@@ -14,17 +14,31 @@ set(ENGINE_PUBLIC_INCLUDES
 
 set(ENGINE_PRIVATE_INCLUDES
 	src/GameEngineCore/window.h
+	src/GameEngineCore/Rendering/OpenGL/shaderProgram.h
+	src/GameEngineCore/Rendering/OpenGL/vertexBuffer.h
+	src/GameEngineCore/Rendering/OpenGL/vertexArray.h
 )
 
 set(ENGINE_PRIVATE_SOURCES 
 	src/GameEngineCore/application.cpp
 	src/GameEngineCore/window.cpp
+	src/GameEngineCore/Rendering/OpenGL/shaderProgram.cpp
+	src/GameEngineCore/Rendering/OpenGL/vertexBuffer.cpp
+	src/GameEngineCore/Rendering/OpenGL/vertexArray.cpp
 )
 
-add_library(GameEngineCore STATIC 
+set(ENGINE_ALL_SOURCES
 	${ENGINE_PUBLIC_INCLUDES}
 	${ENGINE_PRIVATE_INCLUDES}
 	${ENGINE_PRIVATE_SOURCES}
+)
+
+add_library(GameEngineCore STATIC 
+	${ENGINE_ALL_SOURCES}
+)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES 
+	${ENGINE_ALL_SOURCES}
 )
 	
 target_include_directories(GameEngineCore PUBLIC includes)
