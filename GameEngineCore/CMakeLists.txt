@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(GameEngineCore CXX)
+project(GameEngineCore CXX C)
 set(CMAKE_CXX_STANDARD 17)
 
 set(ENGINE_PUBLIC_INCLUDES 
@@ -9,7 +9,7 @@ set(ENGINE_PUBLIC_INCLUDES
 	includes/GameEngineCore/event.h
 	includes/GameEngineCore/mouseEvent.h
 	includes/GameEngineCore/windowEvent.h
-	includes/GameEngineCore/keyEvent.h
+		includes/GameEngineCore/keyEvent.h
 )
 
 set(ENGINE_PRIVATE_INCLUDES
@@ -17,6 +17,7 @@ set(ENGINE_PRIVATE_INCLUDES
 	src/GameEngineCore/Rendering/OpenGL/shaderProgram.h
 	src/GameEngineCore/Rendering/OpenGL/vertexBuffer.h
 	src/GameEngineCore/Rendering/OpenGL/vertexArray.h
+	src/GameEngineCore/Rendering/OpenGL/indexBuffer.h
 )
 
 set(ENGINE_PRIVATE_SOURCES 
@@ -25,6 +26,7 @@ set(ENGINE_PRIVATE_SOURCES
 	src/GameEngineCore/Rendering/OpenGL/shaderProgram.cpp
 	src/GameEngineCore/Rendering/OpenGL/vertexBuffer.cpp
 	src/GameEngineCore/Rendering/OpenGL/vertexArray.cpp
+	src/GameEngineCore/Rendering/OpenGL/indexBuffer.cpp
 )
 
 set(ENGINE_ALL_SOURCES

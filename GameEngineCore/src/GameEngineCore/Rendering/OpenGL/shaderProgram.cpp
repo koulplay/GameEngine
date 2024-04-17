@@ -65,7 +65,7 @@ ShaderProgram::ShaderProgram(const char* vertex_shader_src, const char* fragment
 	glDeleteShader(fragment_shader_id);
 }
 
-ShaderProgram::ShaderProgram(ShaderProgram&& other) {
+ShaderProgram::ShaderProgram(ShaderProgram&& other) noexcept {
 	id_ = other.id_;
 	is_compiled_ = other.is_compiled_;
 
@@ -73,7 +73,7 @@ ShaderProgram::ShaderProgram(ShaderProgram&& other) {
 	other.is_compiled_ = false;
 }
 
-ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) {
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& other) noexcept {
 	glDeleteProgram(id_);
 	id_ = other.id_;
 	is_compiled_ = other.is_compiled_;

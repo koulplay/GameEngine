@@ -11,12 +11,12 @@ public:
 	ShaderProgram(const ShaderProgram&) = delete;
 	ShaderProgram& operator=(ShaderProgram&) = delete;
 
-	ShaderProgram(ShaderProgram&& other);
-	ShaderProgram& operator=(ShaderProgram&& other);
+	ShaderProgram(ShaderProgram&& other) noexcept;
+	ShaderProgram& operator=(ShaderProgram&& other) noexcept;
 
 	void Bind() const;
 	static void Unbind();
-	bool IsCompiled() const { return is_compiled_; }
+	[[nodiscard]] bool IsCompiled() const { return is_compiled_; }
 
 private:
 	bool is_compiled_ = false;
