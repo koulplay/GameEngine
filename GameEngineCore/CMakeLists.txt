@@ -9,7 +9,8 @@ set(ENGINE_PUBLIC_INCLUDES
 	includes/GameEngineCore/event.h
 	includes/GameEngineCore/mouseEvent.h
 	includes/GameEngineCore/windowEvent.h
-		includes/GameEngineCore/keyEvent.h
+	includes/GameEngineCore/keyEvent.h
+	includes/GameEngineCore/camera.h
 )
 
 set(ENGINE_PRIVATE_INCLUDES
@@ -23,6 +24,7 @@ set(ENGINE_PRIVATE_INCLUDES
 set(ENGINE_PRIVATE_SOURCES 
 	src/GameEngineCore/application.cpp
 	src/GameEngineCore/window.cpp
+	src/GameEngineCore/camera.cpp
 	src/GameEngineCore/Rendering/OpenGL/shaderProgram.cpp
 	src/GameEngineCore/Rendering/OpenGL/vertexBuffer.cpp
 	src/GameEngineCore/Rendering/OpenGL/vertexArray.cpp
@@ -54,6 +56,9 @@ target_link_libraries(GameEngineCore PRIVATE spdlog)
 
 add_subdirectory(../external/glad ${CMAKE_CURRENT_BINARY_DIR}/glad)
 target_link_libraries(GameEngineCore PRIVATE glad)
+
+add_subdirectory(../external/glm ${CMAKE_CURRENT_BINARY_DIR}/glm)
+target_link_libraries(GameEngineCore PRIVATE glm)
 
 set(IMGUI_INCLUDES 
 	../external/imgui/imgui.h 
