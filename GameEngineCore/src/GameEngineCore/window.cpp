@@ -9,7 +9,8 @@
 #include "Rendering/OpenGL/vertexArray.h"
 #include "GameEngineCore/camera.h"
 
-#include <glad/glad.h>
+#include "GameEngineCore/Rendering/OpenGL/rendererOpenGL.h"
+
 #include <GLFW/glfw3.h>
 
 #include <utility>
@@ -23,8 +24,6 @@
 
 
 namespace engine {
-static bool is_GLFW_initialized = false;
-
 GLfloat positions_colors[]{
     -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,
     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
@@ -37,7 +36,7 @@ GLuint indices[]{
     3, 2, 1
 };
 
-const GLchar* vertex_shader =
+const char* vertex_shader =
         R"(#version 460
         layout(location = 0) in vec3 vertex_position;
         layout(location = 1) in vec3 vertex_color;
@@ -49,7 +48,7 @@ const GLchar* vertex_shader =
         	gl_Position = view_projection_matrix * model_matrix * vec4(vertex_position, 1.0);
         })";
 
-const GLchar* fragment_shader =
+const char* fragment_shader =
         R"(#version 460
         in vec3 color;
         out vec4 frag_color;
@@ -96,29 +95,25 @@ void Window::SetEventCallback(const EventCallbackFn& callback) {
 int Window::Init() {
     LOG_INFO("[CORE] Creating window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
 
-    /* Initialize the library */
-    if (!is_GLFW_initialized) {
-        if (!glfwInit()) {
-            LOG_CRITICAL("[CORE] Can\'t initialize GLFW!");
-            return -1;
-        }
+    glfwSetErrorCallback([](int error_code, const char* description) {
+        LOG_CRITICAL("GLFW error: {0}", description);
+    });
 
-        is_GLFW_initialized = true;
+    if (!glfwInit()) {
+        LOG_CRITICAL("[CORE] Can\'t initialize GLFW!");
+        return -1;
     }
 
     /* Create a windowed mode window and its OpenGL context */
     p_window_ = glfwCreateWindow(data_.wight, data_.height, data_.title.c_str(), nullptr, nullptr);
     if (!p_window_) {
-        LOG_CRITICAL("[CORE] Can\'t create window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
+        LOG_CRITICAL("Can\'t create window '{0}' with size {1}x{2}", data_.title, data_.wight, data_.height);
         glfwTerminate();
         return -2;
     }
 
-    /* Make the window's context current */
-    glfwMakeContextCurrent(p_window_);
-
-    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        LOG_CRITICAL("[CORE] Failed to initialize GLAD");
+    if (RendererOpenGL::Init(p_window_)) {
+        LOG_CRITICAL("Failed to initialize OpenGL renderer");
         return -3;
     }
 
@@ -128,29 +123,25 @@ int Window::Init() {
         WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(p_window));
         data.wight = wight;
         data.height = height;
-
         EventWindowResize event(wight, height);
         data.call_back_fn(event);
     });
 
     glfwSetCursorPosCallback(p_window_, [](GLFWwindow* p_window, double mouseX, double mouseY) {
         WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(p_window));
-
         EventMouseMoved event(mouseX, mouseY);
         data.call_back_fn(event);
     });
 
     glfwSetWindowCloseCallback(p_window_, [](GLFWwindow* p_window) {
         WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(p_window));
-
         EventWindowClose event;
         data.call_back_fn(event);
     });
 
     glfwSetFramebufferSizeCallback(p_window_, [](GLFWwindow* p_window, int wight, int height) {
-        glViewport(0, 0, wight, height);
+        RendererOpenGL::SetViewport(wight, height, 0, 0);
     });
-
 
     p_shader_program = std::make_unique<ShaderProgram>(vertex_shader, fragment_shader);
     if (!p_shader_program->IsCompiled()) { return false; }
@@ -168,29 +159,12 @@ int Window::Init() {
     p_vao->AddVertexBuffer(*p_positions_colors_vbo);
     p_vao->AddIndexBuffer(*p_index_buffer);
 
-    glm::mat3 mat_1(4, 0, 0, 2, 8, 1, 0, 1, 0);
-    glm::mat3 mat_2(4, 2, 9, 2, 0, 4, 1, 4, 2);
-
-    glm::mat3 result_mat = mat_1 * mat_2;
-
-    LOG_INFO("");
-    LOG_INFO("|{0:3} {1:3} {2:3}|", result_mat[0][0], result_mat[1][0], result_mat[2][0]);
-    LOG_INFO("|{0:3} {1:3} {2:3}|", result_mat[0][1], result_mat[1][1], result_mat[2][1]);
-    LOG_INFO("|{0:3} {1:3} {2:3}|", result_mat[0][2], result_mat[1][2], result_mat[2][2]);
-    LOG_INFO("");
-
-    glm::vec4 vec(1, 2, 3, 4);
-    glm::mat4 mat_identity(1);
-
-    glm::vec4 result_vec = mat_identity * vec;
-    LOG_INFO("({0} {1} {2} {3})", result_vec[0], result_vec[1], result_vec[2], result_vec[3]);
-
     return 0;
 }
 
 void Window::OnUpdate() {
-    glClearColor(background_color_[0], background_color_[1], background_color_[2], background_color_[3]);
-    glClear(GL_COLOR_BUFFER_BIT);
+    RendererOpenGL::SetClearColor(background_color_[0], background_color_[1], background_color_[2], background_color_[3]);
+    RendererOpenGL::Clear();
 
     ImGuiIO& io = ImGui::GetIO();
     io.DisplaySize.x = static_cast<float>(data_.wight);
@@ -242,18 +216,20 @@ void Window::OnUpdate() {
 
     p_shader_program->SetMatrix4("view_projection_matrix", camera.GetProjectionMatrix() * camera.GetViewMatrix());
 
-    p_vao->Bind();
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(p_vao->GetIndecesCount()), GL_UNSIGNED_INT, nullptr);
+    RendererOpenGL::Draw(*p_vao);
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
 
     glfwSwapBuffers(p_window_);
     glfwPollEvents();
 }
 
 void Window::Shutdown() {
+    if (ImGui::GetCurrentContext()) {
+        ImGui::DestroyContext();
+    }
+
     glfwDestroyWindow(p_window_);
     glfwTerminate();
 }

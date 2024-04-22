@@ -2,7 +2,6 @@
 
 #include "vertexBuffer.h"
 
-
 namespace engine {
 class IndexBuffer {
 public:

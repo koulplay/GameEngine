@@ -15,6 +15,7 @@ set(ENGINE_PUBLIC_INCLUDES
 
 set(ENGINE_PRIVATE_INCLUDES
 	src/GameEngineCore/window.h
+	src/GameEngineCore/Rendering/OpenGL/rendererOpenGL.h
 	src/GameEngineCore/Rendering/OpenGL/shaderProgram.h
 	src/GameEngineCore/Rendering/OpenGL/vertexBuffer.h
 	src/GameEngineCore/Rendering/OpenGL/vertexArray.h
@@ -26,6 +27,7 @@ set(ENGINE_PRIVATE_SOURCES
 	src/GameEngineCore/application.cpp
 	src/GameEngineCore/window.cpp
 	src/GameEngineCore/camera.cpp
+	src/GameEngineCore/Rendering/OpenGL/rendererOpenGL.cpp
 	src/GameEngineCore/Rendering/OpenGL/shaderProgram.cpp
 	src/GameEngineCore/Rendering/OpenGL/vertexBuffer.cpp
 	src/GameEngineCore/Rendering/OpenGL/vertexArray.cpp
