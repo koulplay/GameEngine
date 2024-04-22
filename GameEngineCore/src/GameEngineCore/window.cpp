@@ -3,13 +3,13 @@
 #include <GameEngineCore/windowEvent.h>
 #include <GameEngineCore/mouseEvent.h>
 #include <GameEngineCore/keyEvent.h>
+#include "GameEngineCore/camera.h"
+
+#include "GameEngineCore/Rendering/OpenGL/rendererOpenGL.h"
 #include "Rendering/OpenGL/shaderProgram.h"
 #include "Rendering/OpenGL/vertexBuffer.h"
 #include "Rendering/OpenGL/indexBuffer.h"
 #include "Rendering/OpenGL/vertexArray.h"
-#include "GameEngineCore/camera.h"
-
-#include "GameEngineCore/Rendering/OpenGL/rendererOpenGL.h"
 
 #include <GLFW/glfw3.h>
 
@@ -18,6 +18,7 @@
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
+#include "Modules/UIModule.h"
 
 #include <glm/mat3x3.hpp>
 #include <glm/trigonometric.hpp>
@@ -73,11 +74,6 @@ Camera camera;
 Window::Window(std::string title, const unsigned int wight, const unsigned int height)
     : data_({std::move(title), wight, height}) {
     int result_code = Init();
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGui_ImplOpenGL3_Init();
-    ImGui_ImplGlfw_InitForOpenGL(p_window_, true);
 }
 
 Window::~Window() {
@@ -112,7 +108,7 @@ int Window::Init() {
         return -2;
     }
 
-    if (RendererOpenGL::Init(p_window_)) {
+    if (!RendererOpenGL::Init(p_window_)) {
         LOG_CRITICAL("Failed to initialize OpenGL renderer");
         return -3;
     }
@@ -143,6 +139,8 @@ int Window::Init() {
         RendererOpenGL::SetViewport(wight, height, 0, 0);
     });
 
+    UIModule::OnWindowCreate(p_window_);
+
     p_shader_program = std::make_unique<ShaderProgram>(vertex_shader, fragment_shader);
     if (!p_shader_program->IsCompiled()) { return false; }
 
@@ -165,27 +163,6 @@ int Window::Init() {
 void Window::OnUpdate() {
     RendererOpenGL::SetClearColor(background_color_[0], background_color_[1], background_color_[2], background_color_[3]);
     RendererOpenGL::Clear();
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize.x = static_cast<float>(data_.wight);
-    io.DisplaySize.y = static_cast<float>(data_.height);
-
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-    // ImGui::ShowDemoWindow();
-
-    ImGui::Begin("Background Color Window");
-    ImGui::ColorEdit4("Background Color", background_color_);
-    ImGui::SliderFloat3("scale", scale, 0.f, 2.0f);
-    ImGui::SliderFloat("rotate", &rotate, 0.f, 360.0f);
-    ImGui::SliderFloat3("translate", translate, -1.f, 1.0f);
-
-    ImGui::SliderFloat3("camera position", camera_position, -10.f, 10.0f);
-    ImGui::SliderFloat3("camera rotation", camera_rotation, 0.f, 360.0f);
-    ImGui::Checkbox("Perspective camera", &perspective_camera);
-    ImGui::End();
 
     p_shader_program->Bind();
 
@@ -218,18 +195,30 @@ void Window::OnUpdate() {
 
     RendererOpenGL::Draw(*p_vao);
 
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    UIModule::OnUIDrawBegin();
+    bool show = true;
+    UIModule::ShowExampleAppDockSpace(&show);
+    ImGui::ShowDemoWindow();
+
+    ImGui::Begin("Background Color Window");
+    ImGui::ColorEdit4("Background Color", background_color_);
+    ImGui::SliderFloat3("scale", scale, 0.f, 2.0f);
+    ImGui::SliderFloat("rotate", &rotate, 0.f, 360.0f);
+    ImGui::SliderFloat3("translate", translate, -1.f, 1.0f);
+
+    ImGui::SliderFloat3("camera position", camera_position, -10.f, 10.0f);
+    ImGui::SliderFloat3("camera rotation", camera_rotation, 0.f, 360.0f);
+    ImGui::Checkbox("Perspective camera", &perspective_camera);
+    ImGui::End();
+
+    UIModule::OnUIDrawEnd();
 
     glfwSwapBuffers(p_window_);
     glfwPollEvents();
 }
 
 void Window::Shutdown() {
-    if (ImGui::GetCurrentContext()) {
-        ImGui::DestroyContext();
-    }
-
+    UIModule::OnWindowClose();
     glfwDestroyWindow(p_window_);
     glfwTerminate();
 }
