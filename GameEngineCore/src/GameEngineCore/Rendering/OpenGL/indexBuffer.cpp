@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 
-namespace game_engine {
+namespace engine {
 constexpr GLenum usageToGLenum(const VertexBuffer::EUsage usage) {
     switch (usage) {
         case VertexBuffer::EUsage::STATIC: return GL_STATIC_DRAW;
@@ -49,4 +49,4 @@ void IndexBuffer::Bind() const {
 void IndexBuffer::Unbind() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
-} // game_engine
+} // engine

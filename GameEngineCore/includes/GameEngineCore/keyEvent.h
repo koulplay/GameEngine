@@ -3,7 +3,7 @@
 #include "GameEngineCore/event.h"
 #include <cstdint>
 
-namespace game_engine {
+namespace engine {
 
 class EventKey : public EventBase {
 public:

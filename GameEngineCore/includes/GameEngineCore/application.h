@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace game_engine {
+namespace engine {
 
 class Application {
 public:
@@ -29,4 +29,4 @@ private:
 	std::unique_ptr<class Window> p_window_;
 };
 
-}// end namespace game_engine
+}// end namespace engine

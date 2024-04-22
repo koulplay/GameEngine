@@ -2,7 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
-namespace game_engine{
+namespace engine{
 
 #ifdef NDEBUG
 
@@ -20,4 +20,4 @@ namespace game_engine{
 
 #endif // NDEBUG
 
-}// end namespace game_engine::log
+}// end namespace engine::log

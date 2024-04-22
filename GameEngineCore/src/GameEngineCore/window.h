@@ -8,7 +8,7 @@
 
 struct GLFWwindow;
 
-namespace game_engine {
+namespace engine {
 
 class Window {
 public:
@@ -45,4 +45,4 @@ private:
 	float background_color_[4]{ 0.33f, 0.33f, 0.33f, 0.f };
 };
 
-}// end namespace game_engine
+}// end namespace engine

@@ -2,7 +2,7 @@
 
 #include "GameEngineCore/event.h"
 
-namespace game_engine {
+namespace engine {
 
 class EventMouseButton : public EventBase {
 public:
@@ -90,4 +90,4 @@ private:
 	double Xoffset_, Yoffset_;
 };
 
-}// end namespace game_engine
+}// end namespace engine

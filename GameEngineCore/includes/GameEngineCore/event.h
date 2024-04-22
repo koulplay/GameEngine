@@ -2,7 +2,7 @@
 
 #include <functional>
 
-namespace game_engine {
+namespace engine {
 
 enum class EventType {
 	NONE = 0,
@@ -34,4 +34,4 @@ private:
 	EventBase& event_;
 };
 
-}// end namespace game_engine
+}// end namespace engine

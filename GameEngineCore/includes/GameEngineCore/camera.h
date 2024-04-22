@@ -3,7 +3,7 @@
 #include <glm/vec3.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 
-namespace game_engine {
+namespace engine {
 class Camera {
 public:
     enum class ProjectionMode {
@@ -35,4 +35,4 @@ private:
     glm::mat4 view_matrix;
     glm::mat4 projection_matrix_;
 };
-} // end namespace game_engine
+} // end namespace engine

@@ -3,7 +3,7 @@
 #include "vertexBuffer.h"
 #include "indexBuffer.h"
 
-namespace game_engine {
+namespace engine {
 
 class VertexArray {
 public:
@@ -31,4 +31,4 @@ private:
 	size_t indeces_count_ = 0;
 };
 
-} //end namespace game_engine
+} //end namespace engine

@@ -2,7 +2,7 @@
 
 #include <glm/mat4x4.hpp>
 
-namespace game_engine {
+namespace engine {
 
 class ShaderProgram{
 public:
@@ -28,4 +28,4 @@ private:
 	unsigned int id_ = 0;
 };
 
-} //end namespace game_engine
+} //end namespace engine

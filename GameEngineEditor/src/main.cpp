@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 
-class MyApp : public game_engine::Application{
+class MyApp : public engine::Application{
 	void OnUpdate() override{
 		//std::cout << "Update frame: " << frame++ << std::endl;
 	}

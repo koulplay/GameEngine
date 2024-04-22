@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <utility>
 
-namespace game_engine {
+namespace engine {
 constexpr unsigned int ShaderDataTypeToComponentsCount(const ShaderDataType type) {
     switch (type) {
         case ShaderDataType::FLOAT:
@@ -112,4 +112,4 @@ void VertexBuffer::Bind() const {
 void VertexBuffer::Unbind() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
-} //end namespace game_engine
+} //end namespace engine

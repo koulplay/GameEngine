@@ -5,7 +5,7 @@
 
 #include <glad/glad.h>
 
-namespace game_engine {
+namespace engine {
 
 
 
@@ -65,4 +65,4 @@ void VertexArray::Unbind() {
 	glBindVertexArray(0);
 }
 
-} //end namespace game_engine
+} //end namespace engine

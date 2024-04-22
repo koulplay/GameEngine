@@ -5,7 +5,7 @@
 
 #include "glm/gtc/type_ptr.hpp"
 
-namespace game_engine {
+namespace engine {
 
 bool CreateShader(const char* source, const GLenum shader_type, GLuint& shader_id){
 	shader_id = glCreateShader(shader_type);
@@ -100,4 +100,4 @@ void ShaderProgram::Unbind() {
 void ShaderProgram::SetMatrix4(const char* name, const glm::mat4& matrix) const {
 	glUniformMatrix4fv(glGetUniformLocation(id_, name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
-} //end namespace game_engine
+} //end namespace engine

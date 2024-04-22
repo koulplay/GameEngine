@@ -3,7 +3,7 @@
 #include "GameEngineCore/event.h"
 #include <cstdint>
 
-namespace game_engine {
+namespace engine {
 
 class EventWindowClose : public EventBase {
 public:
@@ -41,4 +41,4 @@ private:
 	unsigned int width_, height_;
 };
 
-}// end namespace game_engine
+}// end namespace engine

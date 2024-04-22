@@ -4,7 +4,7 @@
 #include <initializer_list>
 #include <vector>
 
-namespace game_engine {
+namespace engine {
 enum class ShaderDataType {
     FLOAT,
     FLOAT2,
@@ -74,4 +74,4 @@ private:
     unsigned int id_ = 0;
     BufferLayout buffer_layout_;
 };
-} //end namespace game_engine
+} //end namespace engine

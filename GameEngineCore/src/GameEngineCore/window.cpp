@@ -22,7 +22,7 @@
 #include <glm/trigonometric.hpp>
 
 
-namespace game_engine {
+namespace engine {
 static bool is_GLFW_initialized = false;
 
 GLfloat positions_colors[]{
@@ -257,4 +257,4 @@ void Window::Shutdown() {
     glfwDestroyWindow(p_window_);
     glfwTerminate();
 }
-} // end namespace game_engine
+} // end namespace engine

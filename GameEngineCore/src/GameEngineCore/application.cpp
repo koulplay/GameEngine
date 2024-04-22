@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-namespace game_engine {
+namespace engine {
 
 Application::Application() {
 	LOG_INFO("[CORE] Starting Application");
@@ -49,4 +49,4 @@ bool Application::OnWindowClose(EventWindowClose& event) {
 	return true;
 }
 
-}// end namespace game_engine
+}// end namespace engine

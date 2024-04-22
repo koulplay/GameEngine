@@ -19,6 +19,7 @@ set(ENGINE_PRIVATE_INCLUDES
 	src/GameEngineCore/Rendering/OpenGL/vertexBuffer.h
 	src/GameEngineCore/Rendering/OpenGL/vertexArray.h
 	src/GameEngineCore/Rendering/OpenGL/indexBuffer.h
+		src/GameEngineCore/Rendering/OpenGL/rendererOpenGL.h
 )
 
 set(ENGINE_PRIVATE_SOURCES 
@@ -29,6 +30,7 @@ set(ENGINE_PRIVATE_SOURCES
 	src/GameEngineCore/Rendering/OpenGL/vertexBuffer.cpp
 	src/GameEngineCore/Rendering/OpenGL/vertexArray.cpp
 	src/GameEngineCore/Rendering/OpenGL/indexBuffer.cpp
+		src/GameEngineCore/Rendering/OpenGL/rendererOpenGL.cpp
 )
 
 set(ENGINE_ALL_SOURCES
