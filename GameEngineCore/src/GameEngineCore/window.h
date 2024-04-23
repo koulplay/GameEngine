@@ -42,7 +42,6 @@ private:
 
 	GLFWwindow* p_window_;
 	WindowData data_;
-	float background_color_[4]{ 0.33f, 0.33f, 0.33f, 0.f };
 };
 
 }// end namespace engine
