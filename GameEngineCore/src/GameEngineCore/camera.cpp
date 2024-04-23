@@ -2,8 +2,8 @@
 
 #include "glm/trigonometric.hpp"
 
-
 namespace engine {
+
 Camera::Camera(const glm::vec3& position,
                const glm::vec3& rotation,
                const ProjectionMode projection_mode)
@@ -84,4 +84,5 @@ void Camera::SetProjectionMode(const ProjectionMode projection_mode) {
     projection_mode_ = projection_mode;
     UpdateProjectionMatrix();
 }
+
 } // end namespace engine

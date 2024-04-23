@@ -17,6 +17,7 @@
 #include <glm/trigonometric.hpp>
 
 namespace engine {
+
 GLfloat positions_colors[]{
     -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f,
     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
@@ -174,4 +175,5 @@ bool Application::OnWindowClose(EventWindowClose& event) {
     this->~Application();
     return true;
 }
+
 } // end namespace engine

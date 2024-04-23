@@ -7,6 +7,7 @@
 #include "GameEngineCore/log.h"
 
 namespace engine {
+
 bool RendererOpenGL::Init(GLFWwindow* p_window) {
     glfwMakeContextCurrent(p_window);
 
@@ -51,4 +52,5 @@ const char* RendererOpenGL::GetRendererStr() {
 const char* RendererOpenGL::GetVersionStr() {
     return reinterpret_cast<const char*>(glGetString(GL_VERSION));
 }
+
 } // end namespace engine

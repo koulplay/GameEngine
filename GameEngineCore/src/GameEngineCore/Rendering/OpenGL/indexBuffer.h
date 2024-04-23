@@ -3,6 +3,7 @@
 #include "vertexBuffer.h"
 
 namespace engine {
+
 class IndexBuffer {
 public:
     IndexBuffer(const void* data, const size_t count, const VertexBuffer::EUsage usage = VertexBuffer::EUsage::STATIC);
@@ -22,4 +23,5 @@ private:
     unsigned int id_ = 0;
     size_t count_;
 };
+
 } //end namespace engine

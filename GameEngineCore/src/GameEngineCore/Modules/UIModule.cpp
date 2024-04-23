@@ -7,6 +7,7 @@
 #include <imgui/backends/imgui_impl_glfw.h>
 
 namespace engine {
+
 void UIModule::OnWindowCreate(GLFWwindow* p_window) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -149,4 +150,5 @@ void UIModule::ShowExampleAppDockSpace(bool* p_open) {
 
     ImGui::End();
 }
+
 } // end namespace engine

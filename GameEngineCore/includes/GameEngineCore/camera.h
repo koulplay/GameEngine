@@ -4,6 +4,7 @@
 #include <glm/ext/matrix_float4x4.hpp>
 
 namespace engine {
+
 class Camera {
 public:
     enum class ProjectionMode {
@@ -35,4 +36,5 @@ private:
     glm::mat4 view_matrix;
     glm::mat4 projection_matrix_;
 };
+
 } // end namespace engine

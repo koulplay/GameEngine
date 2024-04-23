@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace engine {
+
 enum class ShaderDataType {
     FLOAT,
     FLOAT2,
@@ -74,4 +75,5 @@ private:
     unsigned int id_ = 0;
     BufferLayout buffer_layout_;
 };
+
 } //end namespace engine

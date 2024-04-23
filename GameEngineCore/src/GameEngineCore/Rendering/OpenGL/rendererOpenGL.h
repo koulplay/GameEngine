@@ -3,6 +3,7 @@
 struct GLFWwindow;
 
 namespace engine {
+
 class VertexArray;
 
 class RendererOpenGL {
@@ -19,4 +20,5 @@ public:
     static const char* GetRendererStr();
     static const char* GetVersionStr();
 };
+
 }; // end namespace engine

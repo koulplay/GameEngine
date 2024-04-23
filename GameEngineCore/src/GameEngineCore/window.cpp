@@ -16,6 +16,7 @@
 #include <utility>
 
 namespace engine {
+
 Window::Window(std::string title, const unsigned int wight, const unsigned int height)
     : data_({std::move(title), wight, height}) {
     int result_code = Init();
@@ -99,4 +100,5 @@ void Window::Shutdown() {
     glfwDestroyWindow(p_window_);
     glfwTerminate();
 }
+
 } // end namespace engine
