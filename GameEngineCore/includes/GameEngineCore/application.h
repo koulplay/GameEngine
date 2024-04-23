@@ -30,7 +30,7 @@ public:
 
     float camera_position[3]{0.0f, 0.0f, 1.0f};
     float camera_rotation[3]{0.0f, 0.0f, 0.0f};
-    bool perspective_camera = false;
+    bool perspective_camera = true;
     Camera camera;
 
 private:

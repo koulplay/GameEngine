@@ -11,6 +11,8 @@ set(ENGINE_PUBLIC_INCLUDES
 	includes/GameEngineCore/windowEvent.h
 	includes/GameEngineCore/keyEvent.h
 	includes/GameEngineCore/camera.h
+	includes/GameEngineCore/keys.h
+	includes/GameEngineCore/input.h
 )
 
 set(ENGINE_PRIVATE_INCLUDES
@@ -35,6 +37,7 @@ set(ENGINE_PRIVATE_SOURCES
 	src/GameEngineCore/Rendering/OpenGL/indexBuffer.cpp
 	src/GameEngineCore/Rendering/OpenGL/rendererOpenGL.cpp
 	src/GameEngineCore/Modules/UIModule.cpp
+	src/GameEngineCore/input.cpp
 )
 
 set(ENGINE_ALL_SOURCES

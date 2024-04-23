@@ -61,6 +61,35 @@ int Window::Init() {
 
     glfwSetWindowUserPointer(p_window_, &this->data_);
 
+    glfwSetKeyCallback(p_window_, [](GLFWwindow* p_window, int key, int scancode, int action, int mods) {
+        WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(p_window));
+        switch (action) {
+            case GLFW_PRESS:
+            {
+                EventKeyPressed event(static_cast<KeyCode>(key), false);
+                data.call_back_fn(event);
+                break;
+            }
+
+            case GLFW_RELEASE:
+            {
+                EventKeyReleased event(static_cast<KeyCode>(key));
+                data.call_back_fn(event);
+                break;
+            }
+
+            case GLFW_REPEAT:
+            {
+                EventKeyPressed event(static_cast<KeyCode>(key), true);
+                data.call_back_fn(event);
+                break;
+            }
+            default:
+                LOG_CRITICAL("Error glfwSetKeyCallback");
+                break;
+        }
+    });
+
     glfwSetWindowSizeCallback(p_window_, [](GLFWwindow* p_window, int wight, int height) {
         WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(p_window));
         data.wight = wight;

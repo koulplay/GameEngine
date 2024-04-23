@@ -1,6 +1,7 @@
 #include <GameEngineCore/application.h>
 #include <GameEngineCore/log.h>
 #include <GameEngineCore/window.h>
+#include <GameEngineCore/input.h>
 
 #include "GameEngineCore/Rendering/OpenGL/rendererOpenGL.h"
 #include "Rendering/OpenGL/shaderProgram.h"
@@ -15,6 +16,8 @@
 
 #include <glm/mat3x3.hpp>
 #include <glm/trigonometric.hpp>
+
+#include "GameEngineCore/input.h"
 
 namespace engine {
 
@@ -159,6 +162,25 @@ void Application::OnEvent(EventBase& event) {
     dispatcher.Dispatch<EventWindowClose>([this](EventWindowClose& event) {
         LOG_INFO("[CORE] [EVENT] Window Close");
         close_window_ = true;
+    });
+
+    dispatcher.Dispatch<EventKeyPressed>([this](EventKeyPressed& event) {
+        if (event.GetKeyButton() <= KeyCode::KEY_Z) {
+            if (event.isRepeated()) {
+                LOG_INFO("[CORE] [EVENT] Key pressed and repeated: {0}", static_cast<char>(event.GetKeyButton()));
+            }
+            else {
+                LOG_INFO("[CORE] [EVENT] Key pressed: {0}", static_cast<char>(event.GetKeyButton()));
+            }
+        }
+        Input::PressKey(event.GetKeyButton());
+    });
+
+    dispatcher.Dispatch<EventKeyReleased>([this](EventKeyReleased& event) {
+        if (event.GetKeyButton() <= KeyCode::KEY_Z) {
+            LOG_INFO("[CORE] [EVENT] Key released: {0}", static_cast<char>(event.GetKeyButton()));
+        }
+        Input::ReleaseKey(event.GetKeyButton());
     });
 
     dispatcher.Dispatch<EventWindowResize>([this](EventWindowResize& event) {

@@ -7,20 +7,23 @@ namespace engine {
 
 class EventKey : public EventBase {
 public:
-	EventKey(int key)
-		: key_(key) {}
+	EventKey(const KeyCode key_code)
+		: key_(key_code) {}
 
-	int GetKeyButton() const{
+	KeyCode GetKeyButton() const{
 		return key_;
 	}
 private:
-	int key_;
+	KeyCode key_;
 };
 
 class EventKeyPressed : public EventKey {
 public:
-	EventKeyPressed(int key)
-		: EventKey(key) {}
+	EventKeyPressed(const KeyCode key, const bool repeated)
+		: EventKey(key)
+		, repeated_(repeated){}
+
+	bool isRepeated() { return repeated_; }
 
 	static EventType GetEventStaticType() {
 		return EventType::KEY_PRESSED;
@@ -29,11 +32,13 @@ public:
 	EventType GetEventType() override {
 		return GetEventStaticType();
 	}
+private:
+	bool repeated_;
 };
 
 class EventKeyReleased : public EventKey {
 public:
-	EventKeyReleased(int key)
+	EventKeyReleased(const KeyCode key)
 		: EventKey(key) {}
 
 	static EventType GetEventStaticType() {
