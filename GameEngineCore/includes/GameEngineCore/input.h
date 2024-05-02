@@ -2,6 +2,8 @@
 
 #include "keys.h"
 
+#include <cstddef>
+
 namespace engine {
 
 class Input {

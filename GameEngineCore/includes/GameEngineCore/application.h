@@ -22,14 +22,14 @@ public:
     virtual int Start(unsigned int window_wight, unsigned int window_height, const char* title);
 
     virtual void OnUpdate() {}
-
     virtual void OnUIDraw() {}
 
     void OnEvent(EventBase& event);
     bool OnWindowClose(EventWindowClose& event);
 
-    float camera_position[3]{0.0f, 0.0f, 1.0f};
+    float camera_position[3]{0.0f, 0.0f, 5.0f};
     float camera_rotation[3]{0.0f, 0.0f, 0.0f};
+
     bool perspective_camera = true;
     Camera camera;
 

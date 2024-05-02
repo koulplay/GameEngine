@@ -1,5 +1,6 @@
 #include <GameEngineCore/application.h>
 #include <GameEngineCore/input.h>
+#include <GameEngineCore/camera.h>
 
 #include <iostream>
 #include <memory>
@@ -8,37 +9,42 @@
 
 class EngineEditor : public engine::Application {
     void OnUpdate() override {
+        glm::vec3 movement_delta{0, 0, 0};
+        glm::vec3 rotation_delta{0, 0, 0};
+
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_W)) {
-            camera_position[2] -= 0.01f;
+            movement_delta.z -= 0.05f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_S)) {
-            camera_position[2] += 0.01f;
+            movement_delta.z += 0.05f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_A)) {
-            camera_position[0] -= 0.01f;
+            movement_delta.x -= 0.05f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_D)) {
-            camera_position[0] += 0.01f;
+            movement_delta.x += 0.05f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_E)) {
-            camera_position[1] += 0.01f;
+            movement_delta.y += 0.01f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_Q)) {
-            camera_position[1] -= 0.01f;
+            movement_delta.y -= 0.01f;
         }
 
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_UP)) {
-            camera_rotation[0] += 0.5f;
+            rotation_delta.x += 1.5f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_DOWN)) {
-            camera_rotation[0] -= 0.5f;
+            rotation_delta.x -= 1.5f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_RIGHT)) {
-            camera_rotation[1] -= 0.5f;
+            rotation_delta.y -= 1.5f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_LEFT)) {
-            camera_rotation[1] += 0.5f;
+            rotation_delta.y += 1.5f;
         }
+
+        camera.SetPositionAndRotationDelta(movement_delta, rotation_delta);
     }
 
     void OnUIDraw() override {

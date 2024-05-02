@@ -23,17 +23,32 @@ public:
     void SetPositionRotation(const glm::vec3& position, const glm::vec3& rotation);
     void SetProjectionMode(const ProjectionMode projection_mode);
 
-    [[nodiscard]] glm::mat4 GetViewMatrix() const { return view_matrix; }
+    [[nodiscard]] glm::mat4 GetViewMatrix() const { return view_matrix_; }
     [[nodiscard]] glm::mat4 GetProjectionMatrix() const { return projection_matrix_; }
+
+    void MoveForward(const float delta);
+    void MoveRight(const float delta);
+    void MoveUp(const float delta);
+
+    void SetPositionAndRotationDelta(const glm::vec3 movement_delta, const glm::vec3 rotation_delta);
 
 private:
     void UpdateViewMatrix();
     void UpdateProjectionMatrix();
 
-    glm::vec3 position_;
+    glm::vec3 position_ {0.0f, 0.0f, 3.0f};
     glm::vec3 rotation_;
     ProjectionMode projection_mode_;
-    glm::mat4 view_matrix;
+
+    glm::vec3 direction_;
+    glm::vec3 right_;
+    glm::vec3 up_;
+
+    static constexpr glm::vec3 world_direction_ {0.0f, 0.0f, -1.0f};
+    static constexpr glm::vec3 world_right_ {-1.0f, 0.0f, 0.0f};
+    static constexpr glm::vec3 world_up_ {0.0f, 1.0f, 0.0f};
+
+    glm::mat4 view_matrix_;
     glm::mat4 projection_matrix_;
 };
 

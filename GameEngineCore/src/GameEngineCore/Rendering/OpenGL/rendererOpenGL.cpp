@@ -20,12 +20,15 @@ bool RendererOpenGL::Init(GLFWwindow* p_window) {
     LOG_INFO("  Renderer: {0}", GetRendererStr());
     LOG_INFO("  Version: {0}", GetVersionStr());
 
+    glEnable(GL_DEPTH_TEST);
+
     return true;
 }
 
 void RendererOpenGL::Draw(const VertexArray& vertex_array) {
     vertex_array.Bind();
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vertex_array.GetIndecesCount()), GL_UNSIGNED_INT, nullptr);
+    //glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vertex_array.GetIndecesCount()), GL_UNSIGNED_INT, nullptr);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 void RendererOpenGL::SetClearColor(const float r, const float g, const float b, const float a) {
@@ -33,7 +36,7 @@ void RendererOpenGL::SetClearColor(const float r, const float g, const float b, 
 }
 
 void RendererOpenGL::Clear() {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void RendererOpenGL::SetViewport(const unsigned int width, const unsigned int height,
