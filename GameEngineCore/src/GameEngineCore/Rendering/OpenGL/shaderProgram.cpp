@@ -105,8 +105,16 @@ void ShaderProgram::SetUniform3f(const char* name, const glm::vec3& vector) cons
     glUniform3fv(glGetUniformLocation(id_, name), 1, glm::value_ptr(vector));
 }
 
-void ShaderProgram::SetUniform1(const char* name, const int number) const {
+void ShaderProgram::SetUniform3f(const char* name,  const float x, const float y, const float z) const {
+    glUniform3f(glGetUniformLocation(id_, name), x, y, z);
+}
+
+void ShaderProgram::SetUniform1i(const char* name, const int number) const {
     glUniform1i(glGetUniformLocation(id_, name), number);
+}
+
+void ShaderProgram::SetUniform1f(const char* name, const float number) const {
+    glUniform1f(glGetUniformLocation(id_, name), number);
 }
 
 } //end namespace engine

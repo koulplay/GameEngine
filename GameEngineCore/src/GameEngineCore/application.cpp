@@ -82,27 +82,43 @@ float vertices[] = {
 
 const char* vertex_shader =
         R"(#version 460
-        layout(location = 0) in vec3 vertex_position;
-        layout(location = 1) in vec3 normal_position;
+        layout(location = 0) in vec3 vertex_pos;
+        layout(location = 1) in vec3 normal_pos;
 
-        out vec3 normal;
         out vec3 frag_pos;
+        out vec3 frag_normal;
 
-        uniform mat4 model_matrix;
-        uniform mat4 view_projection_matrix;
+        uniform mat4 model;
+        uniform mat4 viewProjection;
 
         void main() {
-        	gl_Position = view_projection_matrix * model_matrix * vec4(vertex_position, 1.0);
-            frag_pos = vec3(model_matrix * vec4(vertex_position, 1.0f));
-            normal = normal_position;
+        	gl_Position = viewProjection * model * vec4(vertex_pos, 1.0);
+            frag_pos = vec3(model * vec4(vertex_pos, 1.0f));
+            frag_normal = normal_pos;
         })";
 
 const char* fragment_shader =
         R"(#version 460
-        in vec3 normal;
         in vec3 frag_pos;
+        in vec3 frag_normal;
 
         out vec4 frag_color;
+
+        struct Material {
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+            float shininess;
+        };
+        uniform Material material;
+
+        struct Light {
+            vec3 position;
+            vec3 ambient;
+            vec3 diffuse;
+            vec3 specular;
+        };
+        uniform Light light;
 
         uniform vec3 objectColor;
         uniform vec3 lightColor;
@@ -111,23 +127,21 @@ const char* fragment_shader =
 
         void main() {
             //ambient
-            float ambientStrength = 0.1f;
-            vec3 ambient = ambientStrength * lightColor;
+            vec3 ambient = light.ambient * material.ambient;
 
             //diffuse
-            vec3 norm = normalize(normal);
-            vec3 lightDir = normalize(lightPos - frag_pos);
+            vec3 norm = normalize(frag_normal);
+            vec3 lightDir = normalize(light.position - frag_pos);
             float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = diff * lightColor;
+            vec3 diffuse = light.diffuse * (diff * material.diffuse);
 
             //specular
-            float specularStrength = 0.5f;
             vec3 viewDir = normalize(viewPos - frag_pos);
             vec3 reflectDir = reflect(-lightDir, norm);
-            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-            vec3 specular = specularStrength * spec * lightColor;
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+            vec3 specular = light.specular * (spec * material.specular);
 
-            frag_color = vec4((diffuse + ambient + specular) * objectColor, 1.0f);
+            frag_color = vec4((diffuse + ambient + specular), 1.0f);
         })";
 
 const char* light_vertex_shader =
@@ -274,17 +288,27 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
         glm::mat4x4 model_matrix = translate_matrix * rotate_matrix * scale_matrix;
 
         glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-        p_shader_program->SetUniformMatrix4("model_matrix", model_matrix);
+
         p_shader_program->SetUniform3f("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
-        p_shader_program->SetUniform3f("lightColor", glm::vec3( 1.0f, 1.0f, 1.0f));
-        p_shader_program->SetUniform3f("lightPos", lightPos);
+
+        p_shader_program->SetUniform3f("material.ambient", glm::vec3( 1.0f, 0.5f, 0.31f));
+        p_shader_program->SetUniform3f("material.diffuse", glm::vec3( 1.0f, 0.5f, 0.31f));
+        p_shader_program->SetUniform3f("material.specular", glm::vec3( 0.5f, 0.5f, 0.5f));
+        p_shader_program->SetUniform1f("material.shininess", 32.0f);
+
+        p_shader_program->SetUniform3f("light.position", glm::vec3(lightPos));
+        p_shader_program->SetUniform3f("light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f));
+        p_shader_program->SetUniform3f("light.diffuse",  glm::vec3(0.5f, 0.5f, 0.5f));
+        p_shader_program->SetUniform3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
         p_shader_program->SetUniform3f("viewPos", camera.GetPosition());
 
         camera.SetProjectionMode(perspective_camera
                                  ? Camera::ProjectionMode::PERSPECTIVE
                                  : Camera::ProjectionMode::ORTHOGRAPHIC);
 
-        p_shader_program->SetUniformMatrix4("view_projection_matrix", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+        p_shader_program->SetUniformMatrix4("model", model_matrix);
+        p_shader_program->SetUniformMatrix4("viewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
 
         RendererOpenGL::DrawArrays(*p_vao, 36);
 
