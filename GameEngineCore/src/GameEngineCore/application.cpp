@@ -1,3 +1,4 @@
+#include <array>
 #include <GameEngineCore/application.h>
 #include <GameEngineCore/log.h>
 #include <GameEngineCore/window.h>
@@ -12,93 +13,159 @@
 #include <imgui/imgui.h>
 #include "Modules/UIModule.h"
 
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
 #include <glm/mat3x3.hpp>
 #include <glm/trigonometric.hpp>
 
+#include <SOIL2.h>
+
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace engine {
 
 // GLfloat positions_colors[]{
-//     -0.5f, -0.5f,  0.0f,  1.0f,  1.0f,  0.0f,
-//      0.5f, -0.5f,  1.0f,  0.0f,  1.0f,  1.0f,
-//     -0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,
-//      0.5f,  0.5f,  1.0f,  1.0f,  0.0f,  0.0f,
+//     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
+//     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right
+//    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom Left
+//    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left
+// };
+// GLuint indices[] = {
+//     0, 1, 3, // First Triangle
+//     1, 2, 3  // Second Triangle
 // };
 
-GLfloat positions_colors[] = {
-    -0.5f, -0.5f, -0.5f,  1.0f,  1.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f,  1.0f,  1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  1.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  1.0f,
+float vertices[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-    -0.5f, -0.5f,  0.5f,  1.0f,  1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f,  1.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  1.0f,
-    -0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  1.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  1.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f,  1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  1.0f,  1.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f,  1.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f,  1.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-    -0.5f, -0.5f, -0.5f,  1.0f,  1.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f,  1.0f,  1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f,  1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  1.0f,  1.0f,
-    -0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-    -0.5f,  0.5f, -0.5f,  1.0f,  1.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  1.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  1.0f
-};
-
-GLuint indices[]{
-    0, 1, 2,
-    3, 2, 1
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
 
 const char* vertex_shader =
         R"(#version 460
         layout(location = 0) in vec3 vertex_position;
-        layout(location = 1) in vec3 vertex_color;
+        layout(location = 1) in vec3 normal_position;
+
+        out vec3 normal;
+        out vec3 frag_pos;
+
         uniform mat4 model_matrix;
         uniform mat4 view_projection_matrix;
-        out vec3 color;
+
         void main() {
-            color = vertex_color;
         	gl_Position = view_projection_matrix * model_matrix * vec4(vertex_position, 1.0);
+            frag_pos = vec3(model_matrix * vec4(vertex_position, 1.0f));
+            normal = normal_position;
         })";
 
 const char* fragment_shader =
         R"(#version 460
-        in vec3 color;
+        in vec3 normal;
+        in vec3 frag_pos;
+
         out vec4 frag_color;
+
+        uniform vec3 objectColor;
+        uniform vec3 lightColor;
+        uniform vec3 lightPos;
+        uniform vec3 viewPos;
+
         void main() {
-            frag_color = vec4(color, 1.0);
+            //ambient
+            float ambientStrength = 0.1f;
+            vec3 ambient = ambientStrength * lightColor;
+
+            //diffuse
+            vec3 norm = normalize(normal);
+            vec3 lightDir = normalize(lightPos - frag_pos);
+            float diff = max(dot(norm, lightDir), 0.0);
+            vec3 diffuse = diff * lightColor;
+
+            //specular
+            float specularStrength = 0.5f;
+            vec3 viewDir = normalize(viewPos - frag_pos);
+            vec3 reflectDir = reflect(-lightDir, norm);
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+            vec3 specular = specularStrength * spec * lightColor;
+
+            frag_color = vec4((diffuse + ambient + specular) * objectColor, 1.0f);
         })";
 
+const char* light_vertex_shader =
+        R"(#version 460
+        layout(location = 0) in vec3 vertex_position;
+
+        uniform mat4 model_matrix;
+        uniform mat4 view_projection_matrix;
+
+        void main() {
+        	gl_Position = view_projection_matrix * model_matrix * vec4(vertex_position, 1.0);
+        })";
+
+const char* light_fragment_shader =
+        R"(#version 460
+        out vec4 frag_color;
+
+        void main() {
+            frag_color = vec4(1.0f);
+        })";
+
+std::array<glm::vec3, 5> positions = {
+    glm::vec3(-2.f, -2.f, -4.f),
+    glm::vec3(-5.f,  0.f,  3.f),
+    glm::vec3( 2.f,  1.f, -2.f),
+    glm::vec3( 4.f, -3.f,  3.f),
+    glm::vec3( 1.f, -7.f,  1.f)
+};
+
 std::unique_ptr<ShaderProgram> p_shader_program;
-std::unique_ptr<VertexBuffer> p_positions_colors_vbo;
+std::unique_ptr<ShaderProgram> p_light_shader_program;
+std::unique_ptr<VertexBuffer> p_vbo;
 std::unique_ptr<IndexBuffer> p_index_buffer;
 std::unique_ptr<VertexArray> p_vao;
+std::unique_ptr<VertexArray> p_light_vao;
+GLuint texture_buffer_1;
+GLuint texture_buffer_2;
+
 float scale[3]{1.f, 1.f, 1.f};
 float rotate = 0.f;
 float translate[3]{0.f, 0.f, 0.f};
@@ -160,27 +227,31 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
 
     //----------------------------------------------------//
     p_shader_program = std::make_unique<ShaderProgram>(vertex_shader, fragment_shader);
-    if (!p_shader_program->IsCompiled()) { return false; }
+    if (!p_shader_program->IsCompiled()) { return -4; }
 
-    BufferLayout buffer_layout_2vec3{
-        ShaderDataType::FLOAT3,
-        ShaderDataType::FLOAT3
-    };
+    p_light_shader_program = std::make_unique<ShaderProgram>(light_vertex_shader, light_fragment_shader);
+    if (!p_light_shader_program->IsCompiled()) { return -4; }
 
     p_vao = std::make_unique<VertexArray>();
-    p_positions_colors_vbo = std::make_unique<VertexBuffer>(positions_colors, sizeof(positions_colors),
-                                                            buffer_layout_2vec3);
-    p_index_buffer = std::make_unique<IndexBuffer>(indices, sizeof(indices) / sizeof(GLuint));
 
-    p_vao->AddVertexBuffer(*p_positions_colors_vbo);
-    p_vao->AddIndexBuffer(*p_index_buffer);
+    BufferLayout buffer_layout{
+        ShaderDataType::FLOAT3,
+        ShaderDataType::FLOAT3,
+    };
 
+    p_vbo = std::make_unique<VertexBuffer>(vertices, sizeof(vertices),
+                                                            buffer_layout);
+    //p_index_buffer = std::make_unique<IndexBuffer>(indices, sizeof(indices) / sizeof(GLuint));
+
+    p_vao->AddVertexBuffer(*p_vbo);
+
+    p_light_vao = std::make_unique<VertexArray>();
+    p_light_vao->AddVertexBuffer(*p_vbo);
 
     //----------------------------------------------------//
 
     while (!close_window_) {
-        RendererOpenGL::SetClearColor(background_color_[0], background_color_[1], background_color_[2],
-                                      background_color_[3]);
+        RendererOpenGL::SetClearColor(background_color_[0], background_color_[1], background_color_[2], background_color_[3]);
         RendererOpenGL::Clear();
 
         p_shader_program->Bind();
@@ -190,28 +261,44 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
                                  0, 0, scale[2], 0,
                                  0, 0, 0, 1);
 
-        float rotate_in_radians = glm::radians(rotate);
+        const float rotate_in_radians = glm::radians(rotate);
         glm::mat4x4 rotate_matrix(cos(rotate_in_radians), sin(rotate_in_radians), 0, 0,
                                   -sin(rotate_in_radians), cos(rotate_in_radians), 0, 0,
                                   0, 0, 1, 0,
                                   0, 0, 0, 1);
-
         glm::mat4x4 translate_matrix(1, 0, 0, 0,
                                      0, 1, 0, 0,
                                      0, 0, 1, 0,
                                      translate[0], translate[1], translate[2], 1);
 
         glm::mat4x4 model_matrix = translate_matrix * rotate_matrix * scale_matrix;
-        p_shader_program->SetMatrix4("model_matrix", model_matrix);
 
+        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+        p_shader_program->SetUniformMatrix4("model_matrix", model_matrix);
+        p_shader_program->SetUniform3f("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+        p_shader_program->SetUniform3f("lightColor", glm::vec3( 1.0f, 1.0f, 1.0f));
+        p_shader_program->SetUniform3f("lightPos", lightPos);
+        p_shader_program->SetUniform3f("viewPos", camera.GetPosition());
 
         camera.SetProjectionMode(perspective_camera
                                  ? Camera::ProjectionMode::PERSPECTIVE
                                  : Camera::ProjectionMode::ORTHOGRAPHIC);
 
-        p_shader_program->SetMatrix4("view_projection_matrix", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+        p_shader_program->SetUniformMatrix4("view_projection_matrix", camera.GetProjectionMatrix() * camera.GetViewMatrix());
 
-        RendererOpenGL::Draw(*p_vao);
+        RendererOpenGL::DrawArrays(*p_vao, 36);
+
+        p_light_shader_program->Bind();
+
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+
+        model = glm::scale(model, glm::vec3(0.2f));
+        p_light_shader_program->SetUniformMatrix4("model_matrix", model);
+        p_light_shader_program->SetUniformMatrix4("view_projection_matrix", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+
+        RendererOpenGL::DrawArrays(*p_light_vao, 36);
+        glBindVertexArray(0);
 
         //----------------------------------------------------//
         UIModule::OnUIDrawBegin();
@@ -222,11 +309,9 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
         ImGui::Begin("Background Color Window");
         ImGui::ColorEdit4("Background Color", background_color_);
         ImGui::SliderFloat3("scale", scale, 0.f, 2.0f);
-        ImGui::SliderFloat("rotate", &rotate, 0.f, 360.0f);
+        ImGui::SliderFloat("rotate", &rotate, -360.0f, 360.0f);
         ImGui::SliderFloat3("translate", translate, -10.f, 10.0f);
 
-        ImGui::SliderFloat3("camera position", camera_position, -10.f, 10.0f);
-        ImGui::SliderFloat3("camera rotation", camera_rotation, 0.f, 360.0f);
         ImGui::Checkbox("Perspective camera", &perspective_camera);
         ImGui::End();
         //----------------------------------------------------//
@@ -238,7 +323,9 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
         this->OnUpdate();
     }
     p_window_ = nullptr;
+    glfwTerminate();
     return 0;
+
 }
 
 } // end namespace engine

@@ -69,7 +69,10 @@ target_link_libraries(GameEngineCore PRIVATE glad)
 add_subdirectory(../external/glm ${CMAKE_CURRENT_BINARY_DIR}/glm)
 target_link_libraries(GameEngineCore PRIVATE glm)
 
-set(IMGUI_INCLUDES 
+add_subdirectory(../external/SOIL2 ${CMAKE_CURRENT_BINARY_DIR}/SOIL2)
+target_link_libraries(GameEngineCore PRIVATE soil2)
+
+set(IMGUI_INCLUDES
 	../external/imgui/imgui.h 
 	../external/imgui/backends/imgui_impl_glfw.h 
 	../external/imgui/backends/imgui_impl_opengl3.h

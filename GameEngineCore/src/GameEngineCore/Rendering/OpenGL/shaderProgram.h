@@ -21,7 +21,9 @@ public:
     static void Unbind();
     [[nodiscard]] bool IsCompiled() const { return is_compiled_; }
 
-    void SetMatrix4(const char* name, const glm::mat4& matrix) const;
+    void SetUniformMatrix4(const char* name, const glm::mat4& matrix) const;
+    void SetUniform3f(const char* name, const glm::vec3& number) const;
+    void SetUniform1(const char* name, const int number) const;
 
 private:
     bool is_compiled_ = false;

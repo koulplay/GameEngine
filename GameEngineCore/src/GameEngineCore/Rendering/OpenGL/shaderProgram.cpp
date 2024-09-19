@@ -97,8 +97,16 @@ void ShaderProgram::Unbind() {
     glUseProgram(0);
 }
 
-void ShaderProgram::SetMatrix4(const char* name, const glm::mat4& matrix) const {
+void ShaderProgram::SetUniformMatrix4(const char* name, const glm::mat4& matrix) const {
     glUniformMatrix4fv(glGetUniformLocation(id_, name), 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+void ShaderProgram::SetUniform3f(const char* name, const glm::vec3& vector) const {
+    glUniform3fv(glGetUniformLocation(id_, name), 1, glm::value_ptr(vector));
+}
+
+void ShaderProgram::SetUniform1(const char* name, const int number) const {
+    glUniform1i(glGetUniformLocation(id_, name), number);
 }
 
 } //end namespace engine

@@ -25,10 +25,10 @@ class EngineEditor : public engine::Application {
             movement_delta.x += 0.05f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_E)) {
-            movement_delta.y += 0.01f;
+            movement_delta.y += 0.05f;
         }
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_Q)) {
-            movement_delta.y -= 0.01f;
+            movement_delta.y -= 0.05f;
         }
 
         if (engine::Input::isKeyPressed(engine::KeyCode::KEY_UP)) {
@@ -49,8 +49,6 @@ class EngineEditor : public engine::Application {
 
     void OnUIDraw() override {
         ImGui::Begin("Editor");
-        ImGui::SliderFloat3("camera position", camera_position, -10.f, 10.0f);
-        ImGui::SliderFloat3("camera rotation", camera_rotation, 0.f, 360.0f);
         ImGui::Checkbox("Perspective camera", &perspective_camera);
         ImGui::End();
     }
@@ -64,7 +62,7 @@ int main() {
 
     int return_code = engine_editor->Start(1024, 768, "EngineEditor");
 
-    std::cin.get();
+
 
     return return_code;
 }

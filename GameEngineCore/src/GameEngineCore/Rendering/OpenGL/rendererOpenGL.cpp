@@ -25,10 +25,14 @@ bool RendererOpenGL::Init(GLFWwindow* p_window) {
     return true;
 }
 
-void RendererOpenGL::Draw(const VertexArray& vertex_array) {
+void RendererOpenGL::DrawElements(const VertexArray& vertex_array) {
     vertex_array.Bind();
-    //glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vertex_array.GetIndecesCount()), GL_UNSIGNED_INT, nullptr);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(vertex_array.GetIndecesCount()), GL_UNSIGNED_INT, nullptr);
+}
+
+void RendererOpenGL::DrawArrays(const VertexArray& vertex_array, int count) {
+    vertex_array.Bind();
+    glDrawArrays(GL_TRIANGLES, 0, count);
 }
 
 void RendererOpenGL::SetClearColor(const float r, const float g, const float b, const float a) {

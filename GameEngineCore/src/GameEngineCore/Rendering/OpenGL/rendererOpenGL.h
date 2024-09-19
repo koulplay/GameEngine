@@ -10,7 +10,8 @@ class RendererOpenGL {
 public:
     static bool Init(GLFWwindow* p_window);
 
-    static void Draw(const VertexArray& vertex_array);
+    static void DrawElements(const VertexArray& vertex_array);
+    static void DrawArrays(const VertexArray& vertex_array, int count);
     static void SetClearColor(const float r, const float g, const float b, const float a);
     static void Clear();
     static void SetViewport(const unsigned int width, const unsigned int height,
