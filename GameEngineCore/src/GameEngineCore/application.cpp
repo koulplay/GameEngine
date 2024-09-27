@@ -37,77 +37,81 @@ namespace engine {
 // };
 
 float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+    // positions          // normals           // texture coords
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
 
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
 
 const char* vertex_shader =
         R"(#version 460
-        layout(location = 0) in vec3 vertex_pos;
-        layout(location = 1) in vec3 normal_pos;
+        layout(location = 0) in vec3 a_pos;
+        layout(location = 1) in vec3 a_normal;
+        layout(location = 2) in vec2 a_texture_cords;
 
         out vec3 frag_pos;
         out vec3 frag_normal;
+        out vec2 frag_texture_cords;
 
         uniform mat4 model;
         uniform mat4 viewProjection;
 
         void main() {
-        	gl_Position = viewProjection * model * vec4(vertex_pos, 1.0);
-            frag_pos = vec3(model * vec4(vertex_pos, 1.0f));
-            frag_normal = normal_pos;
+        	gl_Position = viewProjection * model * vec4(a_pos, 1.0);
+            frag_pos = vec3(model * vec4(a_pos, 1.0f));
+            frag_normal = a_normal;
+            frag_texture_cords = a_texture_cords;
         })";
 
 const char* fragment_shader =
         R"(#version 460
         in vec3 frag_pos;
         in vec3 frag_normal;
+        in vec2 frag_texture_cords;
 
         out vec4 frag_color;
 
         struct Material {
-            vec3 ambient;
-            vec3 diffuse;
-            vec3 specular;
+            sampler2D diffuse;
+            sampler2D specular;
             float shininess;
         };
         uniform Material material;
@@ -120,28 +124,25 @@ const char* fragment_shader =
         };
         uniform Light light;
 
-        uniform vec3 objectColor;
-        uniform vec3 lightColor;
-        uniform vec3 lightPos;
         uniform vec3 viewPos;
 
         void main() {
             //ambient
-            vec3 ambient = light.ambient * material.ambient;
+            vec3 ambient = light.ambient * vec3(texture(material.diffuse, frag_texture_cords));
 
             //diffuse
             vec3 norm = normalize(frag_normal);
             vec3 lightDir = normalize(light.position - frag_pos);
             float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = light.diffuse * (diff * material.diffuse);
+            vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, frag_texture_cords));
 
             //specular
             vec3 viewDir = normalize(viewPos - frag_pos);
             vec3 reflectDir = reflect(-lightDir, norm);
             float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-            vec3 specular = light.specular * (spec * material.specular);
+            vec3 specular = light.specular * spec * (vec3(texture(material.specular, frag_texture_cords)));
 
-            frag_color = vec4((diffuse + ambient + specular), 1.0f);
+            frag_color = vec4(ambient + diffuse + specular + matrix, 1.0f);
         })";
 
 const char* light_vertex_shader =
@@ -177,8 +178,9 @@ std::unique_ptr<VertexBuffer> p_vbo;
 std::unique_ptr<IndexBuffer> p_index_buffer;
 std::unique_ptr<VertexArray> p_vao;
 std::unique_ptr<VertexArray> p_light_vao;
-GLuint texture_buffer_1;
-GLuint texture_buffer_2;
+GLuint container_diffuse_map;
+GLuint container_specular_map;
+GLuint matrix;
 
 float scale[3]{1.f, 1.f, 1.f};
 float rotate = 0.f;
@@ -251,6 +253,7 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
     BufferLayout buffer_layout{
         ShaderDataType::FLOAT3,
         ShaderDataType::FLOAT3,
+        ShaderDataType::FLOAT2,
     };
 
     p_vbo = std::make_unique<VertexBuffer>(vertices, sizeof(vertices),
@@ -261,6 +264,31 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
 
     p_light_vao = std::make_unique<VertexArray>();
     p_light_vao->AddVertexBuffer(*p_vbo);
+
+
+
+    int width, height;
+    unsigned char* image = SOIL_load_image(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\container2.png)", &width, &height, 0, SOIL_LOAD_RGB);
+
+    glGenTextures(1, &container_diffuse_map);
+    glBindTexture(GL_TEXTURE_2D, container_diffuse_map);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    SOIL_free_image_data(image);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    image = SOIL_load_image(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\lighting_maps_specular_color.png)", &width, &height, 0, SOIL_LOAD_RGB);
+
+    glGenTextures(1, &container_specular_map);
+    glBindTexture(GL_TEXTURE_2D, container_specular_map);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    SOIL_free_image_data(image);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     //----------------------------------------------------//
 
@@ -287,13 +315,19 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
 
         glm::mat4x4 model_matrix = translate_matrix * rotate_matrix * scale_matrix;
 
+
+
+
         glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
         p_shader_program->SetUniform3f("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
 
-        p_shader_program->SetUniform3f("material.ambient", glm::vec3( 1.0f, 0.5f, 0.31f));
-        p_shader_program->SetUniform3f("material.diffuse", glm::vec3( 1.0f, 0.5f, 0.31f));
-        p_shader_program->SetUniform3f("material.specular", glm::vec3( 0.5f, 0.5f, 0.5f));
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, container_diffuse_map);
+        p_shader_program->SetUniform1i("material.diffuse", 0);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, container_specular_map);
+        p_shader_program->SetUniform1i("material.specular", 1);
         p_shader_program->SetUniform1f("material.shininess", 32.0f);
 
         p_shader_program->SetUniform3f("light.position", glm::vec3(lightPos));
@@ -309,6 +343,9 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
 
         p_shader_program->SetUniformMatrix4("model", model_matrix);
         p_shader_program->SetUniformMatrix4("viewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+
+
+
 
         RendererOpenGL::DrawArrays(*p_vao, 36);
 
