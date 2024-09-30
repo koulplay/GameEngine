@@ -26,6 +26,7 @@ public:
     [[nodiscard]] glm::mat4 GetViewMatrix() const { return view_matrix_; }
     [[nodiscard]] glm::mat4 GetProjectionMatrix() const { return projection_matrix_; }
     [[nodiscard]] glm::vec3 GetPosition() const { return position_; }
+    [[nodiscard]] glm::vec3 GetDirection() const { return direction_; }
 
     void MoveForward(const float delta);
     void MoveRight(const float delta);

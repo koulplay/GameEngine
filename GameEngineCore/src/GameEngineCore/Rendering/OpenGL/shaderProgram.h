@@ -22,7 +22,7 @@ public:
     [[nodiscard]] bool IsCompiled() const { return is_compiled_; }
 
     void SetUniformMatrix4(const char* name, const glm::mat4& matrix) const;
-    void SetUniform3f(const char* name, const glm::vec3& vector) const;
+    void SetUniform3fv(const char* name, const glm::vec3& vector) const;
     void SetUniform3f(const char* name, const float x, const float y, const float z) const;
     void SetUniform1i(const char* name, const int number) const;
     void SetUniform1f(const char* name, const float number) const;

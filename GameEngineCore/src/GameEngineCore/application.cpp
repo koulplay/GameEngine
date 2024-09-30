@@ -37,7 +37,7 @@ namespace engine {
 // };
 
 float vertices[] = {
-    // positions          // normals           // texture coords
+     // positions         // normals           // texture coords
     -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
      0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
@@ -92,12 +92,13 @@ const char* vertex_shader =
         out vec2 frag_texture_cords;
 
         uniform mat4 model;
-        uniform mat4 viewProjection;
+        uniform mat4 view;
+        uniform mat4 projection;
 
         void main() {
-        	gl_Position = viewProjection * model * vec4(a_pos, 1.0);
+        	gl_Position = projection * view * model * vec4(a_pos, 1.0);
             frag_pos = vec3(model * vec4(a_pos, 1.0f));
-            frag_normal = a_normal;
+            frag_normal = mat3(transpose(inverse(model))) * a_normal;
             frag_texture_cords = a_texture_cords;
         })";
 
@@ -118,31 +119,58 @@ const char* fragment_shader =
 
         struct Light {
             vec3 position;
+            vec3 direction;
+
             vec3 ambient;
             vec3 diffuse;
             vec3 specular;
+
+            float constant;
+            float linear;
+            float quadratic;
+
+            float cut_off;
+            float outer_cut_off;
         };
         uniform Light light;
 
         uniform vec3 viewPos;
 
         void main() {
-            //ambient
-            vec3 ambient = light.ambient * vec3(texture(material.diffuse, frag_texture_cords));
-
-            //diffuse
-            vec3 norm = normalize(frag_normal);
             vec3 lightDir = normalize(light.position - frag_pos);
-            float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, frag_texture_cords));
 
-            //specular
-            vec3 viewDir = normalize(viewPos - frag_pos);
-            vec3 reflectDir = reflect(-lightDir, norm);
-            float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-            vec3 specular = light.specular * spec * (vec3(texture(material.specular, frag_texture_cords)));
+            float theta     = dot(lightDir, normalize(-light.direction));
+            float epsilon   = light.cut_off - light.outer_cut_off;
+            float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
 
-            frag_color = vec4(ambient + diffuse + specular + matrix, 1.0f);
+            if (theta > light.outer_cut_off) {
+                //ambient
+                vec3 ambient = light.ambient * vec3(texture(material.diffuse, frag_texture_cords));
+
+                //diffuse
+                vec3 norm = normalize(frag_normal);
+                float diff = max(dot(norm, lightDir), 0.0);
+                vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, frag_texture_cords));
+
+                //specular
+                vec3 viewDir = normalize(viewPos - frag_pos);
+                vec3 reflectDir = reflect(-lightDir, norm);
+                float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+                vec3 specular = light.specular * spec * (vec3(texture(material.specular, frag_texture_cords)));
+
+                float distance    = length(light.position - frag_pos);
+                float attenuation = 1.0 / (light.constant + light.linear * distance +
+    		                        light.quadratic * (distance * distance));
+
+                //ambient  *= attenuation;
+                diffuse  *= attenuation * intensity;
+                specular *= attenuation * intensity;
+
+                frag_color = vec4(ambient + diffuse + specular, 1.0f);
+            }
+            else {
+                frag_color = vec4(light.ambient * vec3(texture(material.diffuse, frag_texture_cords)), 1.0f);
+            }
         })";
 
 const char* light_vertex_shader =
@@ -164,12 +192,17 @@ const char* light_fragment_shader =
             frag_color = vec4(1.0f);
         })";
 
-std::array<glm::vec3, 5> positions = {
-    glm::vec3(-2.f, -2.f, -4.f),
-    glm::vec3(-5.f,  0.f,  3.f),
-    glm::vec3( 2.f,  1.f, -2.f),
-    glm::vec3( 4.f, -3.f,  3.f),
-    glm::vec3( 1.f, -7.f,  1.f)
+glm::vec3 positions[] = {
+    glm::vec3( 0.0f,  0.0f,  0.0f),
+    glm::vec3( 2.0f,  5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3( 2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f,  3.0f, -7.5f),
+    glm::vec3( 1.3f, -2.0f, -2.5f),
+    glm::vec3( 1.5f,  2.0f, -2.5f),
+    glm::vec3( 1.5f,  0.2f, -1.5f),
+    glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
 std::unique_ptr<ShaderProgram> p_shader_program;
@@ -315,12 +348,9 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
 
         glm::mat4x4 model_matrix = translate_matrix * rotate_matrix * scale_matrix;
 
-
-
-
         glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
-        p_shader_program->SetUniform3f("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+        p_shader_program->SetUniform3fv("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, container_diffuse_map);
@@ -330,22 +360,37 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
         p_shader_program->SetUniform1i("material.specular", 1);
         p_shader_program->SetUniform1f("material.shininess", 32.0f);
 
-        p_shader_program->SetUniform3f("light.position", glm::vec3(lightPos));
-        p_shader_program->SetUniform3f("light.ambient",  glm::vec3(0.2f, 0.2f, 0.2f));
-        p_shader_program->SetUniform3f("light.diffuse",  glm::vec3(0.5f, 0.5f, 0.5f));
-        p_shader_program->SetUniform3f("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        p_shader_program->SetUniform3fv("light.position", camera.GetPosition());
+        p_shader_program->SetUniform3fv("light.direction", camera.GetDirection());
+        p_shader_program->SetUniform1f("light.cut_off", glm::cos(glm::radians(12.5f)));
+        p_shader_program->SetUniform1f("light.outer_cut_off", glm::cos(glm::radians(15.5f)));
+        p_shader_program->SetUniform3fv("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+        p_shader_program->SetUniform3fv("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+        p_shader_program->SetUniform3fv("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
-        p_shader_program->SetUniform3f("viewPos", camera.GetPosition());
+        p_shader_program->SetUniform1f("light.constant", 1.0f);
+        p_shader_program->SetUniform1f("light.linear", 0.09f);
+        p_shader_program->SetUniform1f("light.quadratic", 0.032f);
+
+        p_shader_program->SetUniform3fv("viewPos", camera.GetPosition());
 
         camera.SetProjectionMode(perspective_camera
                                  ? Camera::ProjectionMode::PERSPECTIVE
                                  : Camera::ProjectionMode::ORTHOGRAPHIC);
 
-        p_shader_program->SetUniformMatrix4("model", model_matrix);
-        p_shader_program->SetUniformMatrix4("viewProjection", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+        //p_shader_program->SetUniformMatrix4("model", model_matrix);
+        p_shader_program->SetUniformMatrix4("view", camera.GetViewMatrix());
+        p_shader_program->SetUniformMatrix4("projection", camera.GetProjectionMatrix());
 
+        for(unsigned int i = 0; i < 10; i++) {
+            glm::mat4 model123(1.);
+            float angle = 20.0f * i;
+            model123 = glm::translate(model123, positions[i]);
+            model123 = glm::rotate(model123, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            p_shader_program->SetUniformMatrix4("model", model123);
 
-
+            RendererOpenGL::DrawArrays(*p_vao, 36);
+        }
 
         RendererOpenGL::DrawArrays(*p_vao, 36);
 

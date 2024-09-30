@@ -1,6 +1,7 @@
 #include "GameEngineCore/camera.h"
 
 #include "glm/trigonometric.hpp"
+#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 
 namespace engine {
@@ -39,29 +40,14 @@ void Camera::UpdateViewMatrix() {
     up_ = glm::cross(direction_, right_);
 
     view_matrix_ = glm::lookAt(position_, position_ + direction_, up_);
-
 }
 
 void Camera::UpdateProjectionMatrix() {
     if (projection_mode_ == ProjectionMode::PERSPECTIVE) {
-        float r = 0.1f;
-        float t = 0.1f;
-        float f = 100;
-        float n = 0.1f;
-        projection_matrix_ = glm::mat4(n / r, 0, 0, 0,
-                                       0, n / t, 0, 0,
-                                       0, 0, (-f - n) / (f - n), -1,
-                                       0, 0, -2 * f * n / (f - n), 0);
+        projection_matrix_ = glm::perspective(glm::radians(45.0f), (float)1024/(float)768, 0.1f, 100.0f);
     }
     else {
-        float r = 2;
-        float t = 2;
-        float f = 100;
-        float n = 0.1f;
-        projection_matrix_ = glm::mat4(1 / r, 0, 0, 0,
-                                       0, 1 / t, 0, 0,
-                                       0, 0, -2 / (f - n), 0,
-                                       0, 0, (-f - n) / (f - n), 0);
+        projection_matrix_ = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.0f);
     }
 }
 
