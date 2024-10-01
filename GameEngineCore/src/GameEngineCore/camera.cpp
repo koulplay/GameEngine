@@ -44,7 +44,7 @@ void Camera::UpdateViewMatrix() {
 
 void Camera::UpdateProjectionMatrix() {
     if (projection_mode_ == ProjectionMode::PERSPECTIVE) {
-        projection_matrix_ = glm::perspective(glm::radians(45.0f), (float)1024/(float)768, 0.1f, 100.0f);
+        projection_matrix_ = glm::perspective(glm::radians(75.0f), (float)1024/(float)768, 0.1f, 100.0f);
     }
     else {
         projection_matrix_ = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.0f);

@@ -6,9 +6,8 @@ namespace engine {
 
 class ShaderProgram {
 public:
-    ShaderProgram(const char* vertex_shader_src, const char* fragment_shader_src);
+    ShaderProgram(const char* vertex_shader_path, const char* fragment_shader_path);
     ~ShaderProgram();
-
 
     ShaderProgram() = delete;
     ShaderProgram(const ShaderProgram&) = delete;

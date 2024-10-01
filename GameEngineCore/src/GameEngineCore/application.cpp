@@ -3,6 +3,7 @@
 #include <GameEngineCore/log.h>
 #include <GameEngineCore/window.h>
 #include <GameEngineCore/input.h>
+#include "GameEngineCore/texture.h"
 
 #include "GameEngineCore/Rendering/OpenGL/rendererOpenGL.h"
 #include "Rendering/OpenGL/shaderProgram.h"
@@ -18,23 +19,11 @@
 
 #include <glm/mat3x3.hpp>
 #include <glm/trigonometric.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <SOIL2.h>
 
-#include <glm/gtc/matrix_transform.hpp>
-
 namespace engine {
-
-// GLfloat positions_colors[]{
-//     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Top Right
-//     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Bottom Right
-//    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Bottom Left
-//    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // Top Left
-// };
-// GLuint indices[] = {
-//     0, 1, 3, // First Triangle
-//     1, 2, 3  // Second Triangle
-// };
 
 float vertices[] = {
      // positions         // normals           // texture coords
@@ -81,117 +70,6 @@ float vertices[] = {
     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
 };
 
-const char* vertex_shader =
-        R"(#version 460
-        layout(location = 0) in vec3 a_pos;
-        layout(location = 1) in vec3 a_normal;
-        layout(location = 2) in vec2 a_texture_cords;
-
-        out vec3 frag_pos;
-        out vec3 frag_normal;
-        out vec2 frag_texture_cords;
-
-        uniform mat4 model;
-        uniform mat4 view;
-        uniform mat4 projection;
-
-        void main() {
-        	gl_Position = projection * view * model * vec4(a_pos, 1.0);
-            frag_pos = vec3(model * vec4(a_pos, 1.0f));
-            frag_normal = mat3(transpose(inverse(model))) * a_normal;
-            frag_texture_cords = a_texture_cords;
-        })";
-
-const char* fragment_shader =
-        R"(#version 460
-        in vec3 frag_pos;
-        in vec3 frag_normal;
-        in vec2 frag_texture_cords;
-
-        out vec4 frag_color;
-
-        struct Material {
-            sampler2D diffuse;
-            sampler2D specular;
-            float shininess;
-        };
-        uniform Material material;
-
-        struct Light {
-            vec3 position;
-            vec3 direction;
-
-            vec3 ambient;
-            vec3 diffuse;
-            vec3 specular;
-
-            float constant;
-            float linear;
-            float quadratic;
-
-            float cut_off;
-            float outer_cut_off;
-        };
-        uniform Light light;
-
-        uniform vec3 viewPos;
-
-        void main() {
-            vec3 lightDir = normalize(light.position - frag_pos);
-
-            float theta     = dot(lightDir, normalize(-light.direction));
-            float epsilon   = light.cut_off - light.outer_cut_off;
-            float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
-
-            if (theta > light.outer_cut_off) {
-                //ambient
-                vec3 ambient = light.ambient * vec3(texture(material.diffuse, frag_texture_cords));
-
-                //diffuse
-                vec3 norm = normalize(frag_normal);
-                float diff = max(dot(norm, lightDir), 0.0);
-                vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, frag_texture_cords));
-
-                //specular
-                vec3 viewDir = normalize(viewPos - frag_pos);
-                vec3 reflectDir = reflect(-lightDir, norm);
-                float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-                vec3 specular = light.specular * spec * (vec3(texture(material.specular, frag_texture_cords)));
-
-                float distance    = length(light.position - frag_pos);
-                float attenuation = 1.0 / (light.constant + light.linear * distance +
-    		                        light.quadratic * (distance * distance));
-
-                //ambient  *= attenuation;
-                diffuse  *= attenuation * intensity;
-                specular *= attenuation * intensity;
-
-                frag_color = vec4(ambient + diffuse + specular, 1.0f);
-            }
-            else {
-                frag_color = vec4(light.ambient * vec3(texture(material.diffuse, frag_texture_cords)), 1.0f);
-            }
-        })";
-
-const char* light_vertex_shader =
-        R"(#version 460
-        layout(location = 0) in vec3 vertex_position;
-
-        uniform mat4 model_matrix;
-        uniform mat4 view_projection_matrix;
-
-        void main() {
-        	gl_Position = view_projection_matrix * model_matrix * vec4(vertex_position, 1.0);
-        })";
-
-const char* light_fragment_shader =
-        R"(#version 460
-        out vec4 frag_color;
-
-        void main() {
-            frag_color = vec4(1.0f);
-        })";
-
 glm::vec3 positions[] = {
     glm::vec3( 0.0f,  0.0f,  0.0f),
     glm::vec3( 2.0f,  5.0f, -15.0f),
@@ -211,9 +89,10 @@ std::unique_ptr<VertexBuffer> p_vbo;
 std::unique_ptr<IndexBuffer> p_index_buffer;
 std::unique_ptr<VertexArray> p_vao;
 std::unique_ptr<VertexArray> p_light_vao;
+std::unique_ptr<Texture> p_container_diffuse_map;
+std::unique_ptr<Texture> p_container_specular_map;
 GLuint container_diffuse_map;
 GLuint container_specular_map;
-GLuint matrix;
 
 float scale[3]{1.f, 1.f, 1.f};
 float rotate = 0.f;
@@ -275,10 +154,12 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
     p_window_->SetEventCallback([this](EventBase& event) { this->OnEvent(event); });
 
     //----------------------------------------------------//
-    p_shader_program = std::make_unique<ShaderProgram>(vertex_shader, fragment_shader);
+    p_shader_program = std::make_unique<ShaderProgram>(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\GameEngineCore\Shaders\cube.vert)",
+                                                     R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\GameEngineCore\Shaders\cube.frag)");
     if (!p_shader_program->IsCompiled()) { return -4; }
 
-    p_light_shader_program = std::make_unique<ShaderProgram>(light_vertex_shader, light_fragment_shader);
+    p_light_shader_program = std::make_unique<ShaderProgram>(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\GameEngineCore\Shaders\light.vert)",
+                                                           R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\GameEngineCore\Shaders\light.frag)");
     if (!p_light_shader_program->IsCompiled()) { return -4; }
 
     p_vao = std::make_unique<VertexArray>();
@@ -299,29 +180,9 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
     p_light_vao->AddVertexBuffer(*p_vbo);
 
 
+    p_container_diffuse_map = std::make_unique<Texture>(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\container2.png)");
 
-    int width, height;
-    unsigned char* image = SOIL_load_image(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\container2.png)", &width, &height, 0, SOIL_LOAD_RGB);
-
-    glGenTextures(1, &container_diffuse_map);
-    glBindTexture(GL_TEXTURE_2D, container_diffuse_map);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    SOIL_free_image_data(image);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    image = SOIL_load_image(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\lighting_maps_specular_color.png)", &width, &height, 0, SOIL_LOAD_RGB);
-
-    glGenTextures(1, &container_specular_map);
-    glBindTexture(GL_TEXTURE_2D, container_specular_map);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    SOIL_free_image_data(image);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    p_container_specular_map = std::make_unique<Texture>(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\container2_specular.png)");
 
     //----------------------------------------------------//
 
@@ -331,79 +192,77 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
 
         p_shader_program->Bind();
 
-        glm::mat4x4 scale_matrix(scale[0], 0, 0, 0,
-                                 0, scale[1], 0, 0,
-                                 0, 0, scale[2], 0,
-                                 0, 0, 0, 1);
-
-        const float rotate_in_radians = glm::radians(rotate);
-        glm::mat4x4 rotate_matrix(cos(rotate_in_radians), sin(rotate_in_radians), 0, 0,
-                                  -sin(rotate_in_radians), cos(rotate_in_radians), 0, 0,
-                                  0, 0, 1, 0,
-                                  0, 0, 0, 1);
-        glm::mat4x4 translate_matrix(1, 0, 0, 0,
-                                     0, 1, 0, 0,
-                                     0, 0, 1, 0,
-                                     translate[0], translate[1], translate[2], 1);
-
-        glm::mat4x4 model_matrix = translate_matrix * rotate_matrix * scale_matrix;
-
-        glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-
-        p_shader_program->SetUniform3fv("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, container_diffuse_map);
+        p_container_diffuse_map->SetActiveTexture(GL_TEXTURE0);
         p_shader_program->SetUniform1i("material.diffuse", 0);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, container_specular_map);
+
+        p_container_specular_map->SetActiveTexture(GL_TEXTURE1);
         p_shader_program->SetUniform1i("material.specular", 1);
+
         p_shader_program->SetUniform1f("material.shininess", 32.0f);
 
-        p_shader_program->SetUniform3fv("light.position", camera.GetPosition());
-        p_shader_program->SetUniform3fv("light.direction", camera.GetDirection());
-        p_shader_program->SetUniform1f("light.cut_off", glm::cos(glm::radians(12.5f)));
-        p_shader_program->SetUniform1f("light.outer_cut_off", glm::cos(glm::radians(15.5f)));
-        p_shader_program->SetUniform3fv("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-        p_shader_program->SetUniform3fv("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-        p_shader_program->SetUniform3fv("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        p_shader_program->SetUniform3fv("view_pos", camera.GetPosition());
 
-        p_shader_program->SetUniform1f("light.constant", 1.0f);
-        p_shader_program->SetUniform1f("light.linear", 0.09f);
-        p_shader_program->SetUniform1f("light.quadratic", 0.032f);
+        p_shader_program->SetUniform3fv("dir_light.direction", glm::vec3(0.0f, -1.0f, 0.0f));
+        p_shader_program->SetUniform3fv("dir_light.ambient", glm::vec3(0.1f, 0.1f, 0.1f));
+        p_shader_program->SetUniform3fv("dir_light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+        p_shader_program->SetUniform3fv("dir_light.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
-        p_shader_program->SetUniform3fv("viewPos", camera.GetPosition());
+        //glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+        std::vector<glm::vec3> pointLightPositions {
+            glm::vec3( 0.7f,  0.2f,  2.0f),
+            glm::vec3( 2.3f, -3.3f, -4.0f),
+            glm::vec3(-4.0f,  2.0f, -12.0f),
+            glm::vec3( 0.0f,  0.0f, -3.0f)
+        };
+
+        for (int i = 0; i < pointLightPositions.size(); ++i) {
+            auto index = std::to_string(i);
+            p_shader_program->SetUniform3fv(("point_lights[" + index + "].position").c_str(), pointLightPositions[i]);
+            p_shader_program->SetUniform3fv(("point_lights[" + index + "].ambient").c_str(), glm::vec3(0.1f));
+            p_shader_program->SetUniform3fv(("point_lights[" + index + "].diffuse").c_str(), glm::vec3(0.6f));
+            p_shader_program->SetUniform3fv(("point_lights[" + index + "].specular").c_str(), glm::vec3(1.0f));
+            p_shader_program->SetUniform1f(("point_lights[" + index + "].constant").c_str(), 1.0f);
+            p_shader_program->SetUniform1f(("point_lights[" + index + "].linear").c_str(), 0.09);
+            p_shader_program->SetUniform1f(("point_lights[" + index + "].quadratic").c_str(), 0.032);
+        }
+
+        p_shader_program->SetUniform3fv("spec_light.position", camera.GetPosition());
+        p_shader_program->SetUniform3fv("spec_light.direction", camera.GetDirection());
+        p_shader_program->SetUniform3fv("spec_light.ambient", glm::vec3(0.1f));
+        p_shader_program->SetUniform3fv("spec_light.diffuse", glm::vec3(0.6f));
+        p_shader_program->SetUniform3fv("spec_light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+        p_shader_program->SetUniform1f("spec_light.cut_off", glm::cos(glm::radians(12.5f)));
+        p_shader_program->SetUniform1f("spec_light.outer_cut_off", glm::cos(glm::radians(15.5f)));
 
         camera.SetProjectionMode(perspective_camera
                                  ? Camera::ProjectionMode::PERSPECTIVE
                                  : Camera::ProjectionMode::ORTHOGRAPHIC);
 
-        //p_shader_program->SetUniformMatrix4("model", model_matrix);
         p_shader_program->SetUniformMatrix4("view", camera.GetViewMatrix());
         p_shader_program->SetUniformMatrix4("projection", camera.GetProjectionMatrix());
 
         for(unsigned int i = 0; i < 10; i++) {
-            glm::mat4 model123(1.);
+            glm::mat4 model(1.);
             float angle = 20.0f * i;
-            model123 = glm::translate(model123, positions[i]);
-            model123 = glm::rotate(model123, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            p_shader_program->SetUniformMatrix4("model", model123);
+            model = glm::translate(model, positions[i]);
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            p_shader_program->SetUniformMatrix4("model", model);
 
             RendererOpenGL::DrawArrays(*p_vao, 36);
         }
 
-        RendererOpenGL::DrawArrays(*p_vao, 36);
-
         p_light_shader_program->Bind();
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, lightPos);
-
-        model = glm::scale(model, glm::vec3(0.2f));
-        p_light_shader_program->SetUniformMatrix4("model_matrix", model);
         p_light_shader_program->SetUniformMatrix4("view_projection_matrix", camera.GetProjectionMatrix() * camera.GetViewMatrix());
+        for (int i = 0; i < pointLightPositions.size(); ++i) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::scale(model, glm::vec3(0.2f));
+            p_light_shader_program->SetUniformMatrix4("model_matrix", model);
 
-        RendererOpenGL::DrawArrays(*p_light_vao, 36);
+            RendererOpenGL::DrawArrays(*p_light_vao, 36);
+        }
+
         glBindVertexArray(0);
 
         //----------------------------------------------------//

@@ -5,6 +5,11 @@
 
 #include "glm/gtc/type_ptr.hpp"
 
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
 namespace engine {
 
 bool CreateShader(const char* source, const GLenum shader_type, GLuint& shader_id) {
@@ -24,16 +29,46 @@ bool CreateShader(const char* source, const GLenum shader_type, GLuint& shader_i
     return true;
 }
 
-ShaderProgram::ShaderProgram(const char* vertex_shader_src, const char* fragment_shader_src) {
+ShaderProgram::ShaderProgram(const char* vertex_shader_path, const char* fragment_shader_path) {
+    std::string vertex_code;
+    std::string fragment_code;
+
+    std::ifstream v_shader_file;
+    std::ifstream f_shader_file;
+
+    v_shader_file.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+    f_shader_file.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+
+    try
+    {
+        // open files
+        v_shader_file.open(vertex_shader_path);
+        f_shader_file.open(fragment_shader_path);
+
+        std::stringstream vShaderStream, fShaderStream;
+        // read file's buffer contents into streams
+        vShaderStream << v_shader_file.rdbuf();
+        fShaderStream << f_shader_file.rdbuf();
+        // close file handlers
+        v_shader_file.close();
+        f_shader_file.close();
+        // convert stream into string
+        vertex_code = vShaderStream.str();
+        fragment_code = fShaderStream.str();
+    }
+    catch (std::ifstream::failure& e) {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
+    }
+
     GLuint vertex_shader_id = 0;
-    if (!CreateShader(vertex_shader_src, GL_VERTEX_SHADER, vertex_shader_id)) {
+    if (!CreateShader(vertex_code.c_str(), GL_VERTEX_SHADER, vertex_shader_id)) {
         LOG_CRITICAL("VERTEX SHADER: compile-time error");
         glDeleteShader(vertex_shader_id);
         return;
     }
 
     GLuint fragment_shader_id = 0;
-    if (!CreateShader(fragment_shader_src, GL_FRAGMENT_SHADER, fragment_shader_id)) {
+    if (!CreateShader(fragment_code.c_str(), GL_FRAGMENT_SHADER, fragment_shader_id)) {
         LOG_CRITICAL("FRAGMENT SHADER: compile-time error");
         glDeleteShader(vertex_shader_id);
         glDeleteShader(fragment_shader_id);

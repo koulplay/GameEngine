@@ -13,6 +13,7 @@ set(ENGINE_PUBLIC_INCLUDES
 	includes/GameEngineCore/camera.h
 	includes/GameEngineCore/keys.h
 	includes/GameEngineCore/input.h
+	includes/GameEngineCore/texture.h
 )
 
 set(ENGINE_PRIVATE_INCLUDES
@@ -38,6 +39,7 @@ set(ENGINE_PRIVATE_SOURCES
 	src/GameEngineCore/Rendering/OpenGL/rendererOpenGL.cpp
 	src/GameEngineCore/Modules/UIModule.cpp
 	src/GameEngineCore/input.cpp
+	src/GameEngineCore/texture.cpp
 )
 
 set(ENGINE_ALL_SOURCES
