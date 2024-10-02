@@ -46,6 +46,7 @@ int Window::Init() {
         return -1;
     }
 
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     /* Create a windowed mode window and its OpenGL context */
     p_window_ = glfwCreateWindow(data_.wight, data_.height, data_.title.c_str(), nullptr, nullptr);
     if (!p_window_) {
