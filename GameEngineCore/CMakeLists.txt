@@ -14,6 +14,7 @@ set(ENGINE_PUBLIC_INCLUDES
 	includes/GameEngineCore/keys.h
 	includes/GameEngineCore/input.h
 	includes/GameEngineCore/texture.h
+	includes/GameEngineCore/mash.h
 )
 
 set(ENGINE_PRIVATE_INCLUDES
@@ -40,6 +41,7 @@ set(ENGINE_PRIVATE_SOURCES
 	src/GameEngineCore/Modules/UIModule.cpp
 	src/GameEngineCore/input.cpp
 	src/GameEngineCore/texture.cpp
+	src/GameEngineCore/mash.cpp
 )
 
 set(ENGINE_ALL_SOURCES
@@ -73,6 +75,9 @@ target_link_libraries(GameEngineCore PRIVATE glm)
 
 add_subdirectory(../external/SOIL2 ${CMAKE_CURRENT_BINARY_DIR}/SOIL2)
 target_link_libraries(GameEngineCore PRIVATE soil2)
+
+add_subdirectory(../external/assimp ${CMAKE_CURRENT_BINARY_DIR}/assimp)
+target_link_libraries(GameEngineCore PRIVATE assimp)
 
 set(IMGUI_INCLUDES
 	../external/imgui/imgui.h 

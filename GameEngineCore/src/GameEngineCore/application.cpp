@@ -21,8 +21,6 @@
 #include <glm/trigonometric.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <SOIL2.h>
-
 namespace engine {
 
 float vertices[] = {
@@ -179,10 +177,9 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
     p_light_vao = std::make_unique<VertexArray>();
     p_light_vao->AddVertexBuffer(*p_vbo);
 
-
     p_container_diffuse_map = std::make_unique<Texture>(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\container2.png)");
 
-    p_container_specular_map = std::make_unique<Texture>(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\container2_specular.png)");
+    p_container_specular_map = std::make_unique<Texture>(R"(C:\dev\repos\CLion\GameEngine\GameEngine\GameEngineCore\src\lighting_maps_specular_color.png)");
 
     //----------------------------------------------------//
 
@@ -222,8 +219,8 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
             p_shader_program->SetUniform3fv(("point_lights[" + index + "].diffuse").c_str(), glm::vec3(0.6f));
             p_shader_program->SetUniform3fv(("point_lights[" + index + "].specular").c_str(), glm::vec3(1.0f));
             p_shader_program->SetUniform1f(("point_lights[" + index + "].constant").c_str(), 1.0f);
-            p_shader_program->SetUniform1f(("point_lights[" + index + "].linear").c_str(), 0.09);
-            p_shader_program->SetUniform1f(("point_lights[" + index + "].quadratic").c_str(), 0.032);
+            p_shader_program->SetUniform1f(("point_lights[" + index + "].linear").c_str(), 0.09f);
+            p_shader_program->SetUniform1f(("point_lights[" + index + "].quadratic").c_str(), 0.032f);
         }
 
         p_shader_program->SetUniform3fv("spec_light.position", camera.GetPosition());
@@ -256,7 +253,7 @@ int Application::Start(unsigned int window_width, unsigned int window_height, co
         p_light_shader_program->SetUniformMatrix4("view_projection_matrix", camera.GetProjectionMatrix() * camera.GetViewMatrix());
         for (int i = 0; i < pointLightPositions.size(); ++i) {
             glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::translate(model, glm::vec3(pointLightPositions[i]));
             model = glm::scale(model, glm::vec3(0.2f));
             p_light_shader_program->SetUniformMatrix4("model_matrix", model);
 
